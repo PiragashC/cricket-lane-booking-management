@@ -42,8 +42,9 @@ public class BookingController {
     @GetMapping("/get-all-for-calender")
     public CalenderResponseDto getAllBookingsForCalender(@RequestParam(value = "laneId", required = false) String laneId,
                                                          @RequestParam(value = "fromDate", required = false) LocalDate fromDate,
-                                                         @RequestParam(value = "toDate", required = false) LocalDate toDate) {
-        return bookingAgent.getAllBookingsForCalender(laneId, fromDate, toDate);
+                                                         @RequestParam(value = "toDate", required = false) LocalDate toDate,
+                                                         @RequestHeader(value = "Authorization",required = false) String token) {
+        return bookingAgent.getAllBookingsForCalender(laneId, fromDate, toDate,token);
     }
 
     @PutMapping

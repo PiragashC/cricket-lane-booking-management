@@ -30,8 +30,8 @@ public class BookingAgent {
         return bookingService.checkLaneAvailability(fromTime,toTime,date);
     }
 
-    public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate,LocalDate toDate) {
-        return bookingService.getAllBookingsForCalender(laneId,fromDate,toDate);
+    public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate,LocalDate toDate,String token) {
+        return bookingService.getAllBookingsForCalender(laneId,fromDate,toDate,token);
     }
 
     public ResponseDto updateStatus(String bookingId, String status) {

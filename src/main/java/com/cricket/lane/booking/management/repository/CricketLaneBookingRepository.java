@@ -37,14 +37,23 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
     );
 
 
-    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingResponseDto(c.id, CONCAT(c.firstName,' ', c.lastName) AS userName,c.fromTime,c.toTime) " +
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingResponseDto(c.id, CONCAT(c.firstName,' ', c.lastName) AS userName,c.fromTime,c.toTime,c.telephoneNumber) " +
             "FROM CricketLaneBooking c " +
             "LEFT JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
             "LEFT JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
             "WHERE s.laneId = :laneId " +
             "AND b.bookingDate BETWEEN :fromDate AND :toDate " +
             "AND (c.bookingStatus = 'SUCCESS' OR c.bookingStatus = 'PENDING')")
-    List<BookingResponseDto> getAllBookingsForCalender(String laneId, LocalDate fromDate,LocalDate toDate);
+    List<BookingResponseDto> getAllBookingsForCalenderAdmin(String laneId, LocalDate fromDate,LocalDate toDate);
+
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingResponseDto(c.id,c.fromTime,c.toTime) " +
+            "FROM CricketLaneBooking c " +
+            "LEFT JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
+            "LEFT JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
+            "WHERE s.laneId = :laneId " +
+            "AND b.bookingDate BETWEEN :fromDate AND :toDate " +
+            "AND (c.bookingStatus = 'SUCCESS' OR c.bookingStatus = 'PENDING')")
+    List<BookingResponseDto> getAllBookingsForCalenderUser(String laneId, LocalDate fromDate,LocalDate toDate);
 
     @Query("SELECT COUNT(c) > 0 " +
             "FROM CricketLaneBooking c " +

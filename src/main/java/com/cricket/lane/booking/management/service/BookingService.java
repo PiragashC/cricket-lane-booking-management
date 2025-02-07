@@ -75,7 +75,7 @@ public class BookingService {
         return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates,dates.size());
     }
 
-    public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate, LocalDate toDate) {
+    public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate, LocalDate toDate,String token) {
         CalenderResponseDto calenderResponseDto = new CalenderResponseDto();
         String laneName = laneRepository.findLaneNameById(laneId);
         List<WeekMonthViewResponseDto> weekMonthViewResponseDtos = new ArrayList<>();
@@ -83,19 +83,34 @@ public class BookingService {
         calenderResponseDto.setLaneId(laneId);
 
         if (fromDate.equals(toDate)) {
-            List<BookingResponseDto> bookingResponseDtos = cricketLaneBookingRepository.getAllBookingsForCalender(laneId, fromDate, toDate);
-            calenderResponseDto.setBookingDate(fromDate);
-            calenderResponseDto.setLaneName(laneName);
-            calenderResponseDto.setBookingResponseDtos(bookingResponseDtos);
+            if (token == null) {
+                List<BookingResponseDto> bookingResponseDtos = cricketLaneBookingRepository.getAllBookingsForCalenderUser(laneId, fromDate, toDate);
+                calenderResponseDto.setBookingDate(fromDate);
+                calenderResponseDto.setLaneName(laneName);
+                calenderResponseDto.setBookingResponseDtos(bookingResponseDtos);
+            }else {
+                List<BookingResponseDto> bookingResponseDtos = cricketLaneBookingRepository.getAllBookingsForCalenderAdmin(laneId, fromDate, toDate);
+                calenderResponseDto.setBookingDate(fromDate);
+                calenderResponseDto.setLaneName(laneName);
+                calenderResponseDto.setBookingResponseDtos(bookingResponseDtos);
+            }
         } else {
             List<LocalDate> dateList = getDatesBetween(fromDate, toDate);
 
             dateList.forEach(date -> {
-                List<BookingResponseDto> bookingResponseDtosForDate = cricketLaneBookingRepository.getAllBookingsForCalender(laneId, date, date);
-                WeekMonthViewResponseDto weekMonthViewResponseDto = new WeekMonthViewResponseDto();
-                weekMonthViewResponseDto.setBookingDate(date);
-                weekMonthViewResponseDto.setBookingResponseDtos(bookingResponseDtosForDate);
-                weekMonthViewResponseDtos.add(weekMonthViewResponseDto);
+                if (token == null) {
+                    List<BookingResponseDto> bookingResponseDtosForDate = cricketLaneBookingRepository.getAllBookingsForCalenderUser(laneId, date, date);
+                    WeekMonthViewResponseDto weekMonthViewResponseDto = new WeekMonthViewResponseDto();
+                    weekMonthViewResponseDto.setBookingDate(date);
+                    weekMonthViewResponseDto.setBookingResponseDtos(bookingResponseDtosForDate);
+                    weekMonthViewResponseDtos.add(weekMonthViewResponseDto);
+                }else {
+                    List<BookingResponseDto> bookingResponseDtosForDate = cricketLaneBookingRepository.getAllBookingsForCalenderAdmin(laneId, date, date);
+                    WeekMonthViewResponseDto weekMonthViewResponseDto = new WeekMonthViewResponseDto();
+                    weekMonthViewResponseDto.setBookingDate(date);
+                    weekMonthViewResponseDto.setBookingResponseDtos(bookingResponseDtosForDate);
+                    weekMonthViewResponseDtos.add(weekMonthViewResponseDto);
+                }
             });
 
             calenderResponseDto.setLaneName(laneName);

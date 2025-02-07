@@ -13,11 +13,20 @@ public class BookingResponseDto {
     private LocalTime startTime;
     private LocalTime endTime;
     private String status;
+    private String phoneNumber;
 
-    public BookingResponseDto(String bookingId, String userName, LocalTime fromTime, LocalTime toTime) {
+    public BookingResponseDto(String bookingId, String userName, LocalTime fromTime, LocalTime toTime,String telephoneNumber) {
         this.bookingId = bookingId;
         this.userName = userName;
         this.startTime = fromTime;
         this.endTime = toTime;
+        this.phoneNumber = telephoneNumber;
     }
+
+    public BookingResponseDto(String bookingId, LocalTime fromTime, LocalTime toTime) {
+        this.bookingId = bookingId;
+        this.startTime = fromTime;
+        this.endTime = toTime;
+    }
+
 }
