@@ -42,4 +42,5 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
     Boolean checkLaneFree(@Param("fromTime") LocalTime fromTime,
                           @Param("toTime") LocalTime toTime,
                           @Param("date") LocalDate date);
+
 }

@@ -1,6 +1,7 @@
 package com.cricket.lane.booking.management.service;
 
 import com.cricket.lane.booking.management.api.dto.*;
+import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
 import com.cricket.lane.booking.management.enums.BookingStatus;
 import com.cricket.lane.booking.management.exception.ServiceException;
@@ -16,9 +17,7 @@ import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,6 +31,8 @@ public class BookingService {
     private final CricketLaneBookingRepository cricketLaneBookingRepository;
 
     private final LaneRepository laneRepository;
+
+    private final EmailNotificationService emailNotificationService;
 
     public ResponseDto bookingCricketLane(CricketLaneBooking cricketLaneBooking) {
         cricketLaneBooking.getBookingDates().stream()
@@ -131,8 +132,50 @@ public class BookingService {
         cricketLaneBooking.setBookingStatus(BookingStatus.fromMappedValue(status));
         cricketLaneBookingRepository.save(cricketLaneBooking);
 
+        if (status.equalsIgnoreCase(BookingStatus.SUCCESS.getMappedValue())){
+            sendConfirmationEmail(cricketLaneBooking);
+        }
+
         return new ResponseDto(BOOKING_STATUS_UPDATED);
     }
+
+    private void sendConfirmationEmail(CricketLaneBooking cricketLaneBooking) {
+        EmailDataDto emailDataDto = new EmailDataDto();
+        emailDataDto.setSubject("Indoor Cricket Lane Booking Confirmation – Kover Drive");
+        emailDataDto.setServiceProvider("kover_drive");
+        emailDataDto.setMailTemplateName("booking_confirmation");
+
+        emailDataDto.setRecipients(Collections.singletonList(cricketLaneBooking.getEmail()));
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("name", cricketLaneBooking.getFirstName());
+
+        String lanes = cricketLaneBooking.getSelectedLanes().stream()
+                .map(lane -> laneRepository.findLaneNameById(lane.getLaneId()))
+                .collect(Collectors.joining(", "));
+
+        String dates = cricketLaneBooking.getBookingDates().stream()
+                .map(BookingDates::getBookingDate)
+                .map(String::valueOf)
+                .collect(Collectors.joining(", "));
+
+        Duration duration = Duration.between(cricketLaneBooking.getFromTime(),cricketLaneBooking.getToTime());
+
+        data.put("laneNumber", lanes);
+        data.put("date", dates);
+        data.put("time", cricketLaneBooking.getFromTime());
+        data.put("duration", duration.toHours() + " hours");
+        data.put("bookingReference", "REF-001");
+
+        emailDataDto.setData(data);
+
+        try {
+            emailNotificationService.send(emailDataDto);
+        } catch (Exception e) {
+            throw new ServiceException("EMAIL_SENDING_FAILED", BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 
 }
