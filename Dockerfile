@@ -1,8 +1,14 @@
-FROM mysql:8.0
+# Use an official OpenJDK runtime as the base image
+FROM openjdk:17-jdk-slim
 
-# Set environment variables; these can also be configured in Render's dashboard
-ENV MYSQL_ROOT_PASSWORD=root
-ENV MYSQL_DATABASE=cricket_lane_booking
+# Set the working directory inside the container
+WORKDIR /app
 
-# Expose the MySQL port
-EXPOSE 3306
+# Copy the application JAR file into the container
+COPY target/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar /app/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar
+
+# Expose the application's port (adjust as needed)
+EXPOSE 8080
+
+# Run the application
+CMD ["java", "-jar", "/app/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar"]
