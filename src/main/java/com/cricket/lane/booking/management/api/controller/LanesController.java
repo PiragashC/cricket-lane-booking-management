@@ -9,20 +9,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/v1/lane")
+@RequestMapping("api/v1/lanes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
-public class LaneController {
+public class LanesController {
 
     private final LaneAgent laneAgent;
-
-    @GetMapping
-    public List<LaneDto> getAllActiveLanes(){
-        return laneAgent.getAllActiveLanes();
-    }
 
     @PostMapping
     public ResponseDto createLane(@RequestBody LaneDto laneDto){
         return laneAgent.createLane(laneDto);
+    }
+
+    @GetMapping
+    public List<LaneDto> getAllLanes(){
+        return laneAgent.getAllActiveLanes();
     }
 }

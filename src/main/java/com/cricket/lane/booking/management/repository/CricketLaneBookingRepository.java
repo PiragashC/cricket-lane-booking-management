@@ -20,11 +20,15 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
             "LEFT JOIN SelectedLanes s ON l.id = s.laneId " +
             "LEFT JOIN CricketLaneBooking c ON s.cricketLaneBookingId = c.id " +
             "LEFT JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
-            "WHERE (b.bookingDate NOT IN :dates OR b.bookingDate IS NULL) " +
-            "AND :fromTime < c.toTime " +
-            "AND :toTime > c.fromTime " +
+            "WHERE NOT EXISTS ( " +
+            "    SELECT 1 FROM BookingDates bd " +
+            "    WHERE bd.cricketLaneBookingId = c.id " +
+            "    AND bd.bookingDate IN :dates " +
+            ") " +
+            "AND (:fromTime < c.toTime OR c.id IS NULL) " +
+            "AND (:toTime > c.fromTime OR c.id IS NULL) " +
             "GROUP BY l.id " +
-            "HAVING COUNT(DISTINCT b.bookingDate) = :totalDates")
+            "HAVING COUNT(DISTINCT b.bookingDate) = 0 OR COUNT(DISTINCT b.bookingDate) = :totalDates")
     List<LaneDto> findAvailableLanes(
             @Param("fromTime") LocalTime fromTime,
             @Param("toTime") LocalTime toTime,

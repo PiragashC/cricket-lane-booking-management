@@ -1,6 +1,7 @@
 package com.cricket.lane.booking.management.api.controller;
 
 import com.cricket.lane.booking.management.agent.BookingAgent;
+import com.cricket.lane.booking.management.agent.LaneAgent;
 import com.cricket.lane.booking.management.api.dto.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,8 @@ import java.util.List;
 public class BookingController {
 
     private final BookingAgent bookingAgent;
+
+    private final LaneAgent laneAgent;
 
     @PostMapping
     public ResponseDto bookingCricketLane(@RequestBody CricketLaneBookingDto cricketLaneBookingDto) {
@@ -47,5 +50,15 @@ public class BookingController {
     public ResponseDto updateStatus(@RequestParam(value = "bookingId") String bookingId,
                                     @RequestParam(value = "status") String status) {
         return bookingAgent.updateStatus(bookingId, status);
+    }
+
+    @GetMapping("/lanes")
+    public List<LaneDto> getAllActiveLanes(){
+        return laneAgent.getAllActiveLanes();
+    }
+
+    @PostMapping("/create-lane")
+    public ResponseDto createLane(@RequestBody LaneDto laneDto){
+        return laneAgent.createLane(laneDto);
     }
 }

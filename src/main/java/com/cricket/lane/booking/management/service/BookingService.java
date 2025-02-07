@@ -76,30 +76,35 @@ public class BookingService {
     }
 
     public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate, LocalDate toDate) {
-        List<BookingResponseDto> bookingResponseDtos = cricketLaneBookingRepository.getAllBookingsForCalender(laneId, fromDate, toDate);
         CalenderResponseDto calenderResponseDto = new CalenderResponseDto();
         String laneName = laneRepository.findLaneNameById(laneId);
         List<WeekMonthViewResponseDto> weekMonthViewResponseDtos = new ArrayList<>();
+
         calenderResponseDto.setLaneId(laneId);
+
         if (fromDate.equals(toDate)) {
+            List<BookingResponseDto> bookingResponseDtos = cricketLaneBookingRepository.getAllBookingsForCalender(laneId, fromDate, toDate);
             calenderResponseDto.setBookingDate(fromDate);
             calenderResponseDto.setLaneName(laneName);
             calenderResponseDto.setBookingResponseDtos(bookingResponseDtos);
         } else {
             List<LocalDate> dateList = getDatesBetween(fromDate, toDate);
-            dateList.stream()
-                    .map(date -> {
-                        WeekMonthViewResponseDto weekMonthViewResponseDto = new WeekMonthViewResponseDto();
-                        weekMonthViewResponseDto.setBookingDate(date);
-                        weekMonthViewResponseDto.setBookingResponseDtos(bookingResponseDtos);
-                        weekMonthViewResponseDtos.add(weekMonthViewResponseDto);
-                        return date;
-                    }).toList();
+
+            dateList.forEach(date -> {
+                List<BookingResponseDto> bookingResponseDtosForDate = cricketLaneBookingRepository.getAllBookingsForCalender(laneId, date, date);
+                WeekMonthViewResponseDto weekMonthViewResponseDto = new WeekMonthViewResponseDto();
+                weekMonthViewResponseDto.setBookingDate(date);
+                weekMonthViewResponseDto.setBookingResponseDtos(bookingResponseDtosForDate);
+                weekMonthViewResponseDtos.add(weekMonthViewResponseDto);
+            });
+
             calenderResponseDto.setLaneName(laneName);
             calenderResponseDto.setWeekMonthViewResponseDtos(weekMonthViewResponseDtos);
         }
+
         return calenderResponseDto;
     }
+
 
     private List<LocalDate> getDatesBetween(LocalDate startDate, LocalDate endDate) {
         return Stream.iterate(startDate, date -> date.plusDays(1))
