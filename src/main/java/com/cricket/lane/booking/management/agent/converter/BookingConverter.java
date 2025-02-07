@@ -4,6 +4,7 @@ import com.cricket.lane.booking.management.api.dto.CricketLaneBookingDto;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
 import com.cricket.lane.booking.management.entity.SelectedLanes;
+import com.cricket.lane.booking.management.enums.BookingStatus;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,6 +49,7 @@ public class BookingConverter {
         cricketLaneBooking.setToTime(cricketLaneBookingDto.getToTime());
         cricketLaneBooking.setTelephoneNumber(cricketLaneBookingDto.getTelephoneNumber());
         cricketLaneBooking.setOrganization(cricketLaneBookingDto.getOrganization());
+        cricketLaneBooking.setBookingStatus(BookingStatus.PENDING);
 
         if (cricketLaneBookingDto.getBookingDatesDtos() != null) {
             cricketLaneBooking.setBookingDates(convertBookingDates(cricketLaneBookingDto.getBookingDatesDtos()));

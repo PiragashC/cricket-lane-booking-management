@@ -26,8 +26,8 @@ public class BookingAgent {
         return bookingService.getBookingPrice(noOfLanes,fromTime,toTime);
     }
 
-    public List<AvailabilityResponseDto> checkLaneAvailability(List<String> laneId, LocalTime fromTime, LocalTime toTime, List<LocalDate> date) {
-        return bookingService.checkLaneAvailability(laneId,fromTime,toTime,date);
+    public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> date) {
+        return bookingService.checkLaneAvailability(fromTime,toTime,date);
     }
 
     public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate,LocalDate toDate) {

@@ -71,26 +71,8 @@ public class BookingService {
         return bookingPriceDto;
     }
 
-    public List<AvailabilityResponseDto> checkLaneAvailability(List<String> laneId, LocalTime fromTime, LocalTime toTime, List<LocalDate> dates) {
-        return dates.stream()
-                .map(date -> {
-                    Set<String> busyLanes = cricketLaneBookingRepository.checkLaneAvailability(fromTime, toTime, date);
-                    List<LaneDto> availableLanes = new ArrayList<>();
-                    laneId.stream()
-                            .filter(lane -> !busyLanes.contains(lane))
-                            .map(lane -> {
-                                LaneDto laneDto = new LaneDto();
-                                laneDto.setLaneId(lane);
-                                String laneName = laneRepository.findLaneNameById(lane);
-                                laneDto.setLaneName(laneName);
-                                availableLanes.add(laneDto);
-                                return laneDto;
-                            })
-                            .toList();
-
-                    return new AvailabilityResponseDto(date, availableLanes);
-                })
-                .toList();
+    public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> dates) {
+        return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates,dates.size());
     }
 
     public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate, LocalDate toDate) {
