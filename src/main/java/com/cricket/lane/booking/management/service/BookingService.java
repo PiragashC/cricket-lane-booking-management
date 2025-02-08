@@ -72,7 +72,7 @@ public class BookingService {
     }
 
     public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> dates) {
-        return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates,dates.size());
+        return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates);
     }
 
     public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate, LocalDate toDate,String token) {
