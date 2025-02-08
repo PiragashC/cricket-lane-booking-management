@@ -28,8 +28,9 @@ public class BookingController {
     @GetMapping
     public BookingPriceDto getBookingPrice(@RequestParam(value = "noOfLanes", required = false) Integer noOfLanes,
                                            @RequestParam(value = "fromTime", required = false) LocalTime fromTime,
-                                           @RequestParam(value = "toTime", required = false) LocalTime toTime) {
-        return bookingAgent.getBookingPrice(noOfLanes, fromTime, toTime);
+                                           @RequestParam(value = "toTime", required = false) LocalTime toTime,
+                                           @RequestParam(value = "noOfDates",required = false) Integer noOfDates) {
+        return bookingAgent.getBookingPrice(noOfLanes, fromTime, toTime,noOfDates);
     }
 
     @GetMapping("/check-availability")

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -33,6 +34,10 @@ public class BookingService {
     private final LaneRepository laneRepository;
 
     private final EmailNotificationService emailNotificationService;
+
+    private static final SecureRandom random = new SecureRandom();
+
+    private static final Set<Integer> generatedNumbers = new HashSet<>();
 
     public ResponseDto bookingCricketLane(CricketLaneBooking cricketLaneBooking) {
         cricketLaneBooking.getBookingDates().stream()
@@ -56,7 +61,7 @@ public class BookingService {
         return responseDto;
     }
 
-    public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime) {
+    public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime,Integer noOfDates) {
         BookingPriceDto bookingPriceDto = new BookingPriceDto();
         double ratePerLane = 40.0;
 
@@ -64,7 +69,7 @@ public class BookingService {
 
         long durationHours = (long) Math.ceil(durationMinutes / 60.0);
 
-        BigDecimal totalPrice = BigDecimal.valueOf(noOfLanes * durationHours * ratePerLane);
+        BigDecimal totalPrice = BigDecimal.valueOf(noOfLanes * durationHours * ratePerLane * noOfDates);
 
         bookingPriceDto.setBookingPrice(totalPrice);
 
@@ -131,11 +136,11 @@ public class BookingService {
     public ResponseDto updateStatus(String bookingId, String status) {
         CricketLaneBooking cricketLaneBooking = cricketLaneBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
-        cricketLaneBooking.setBookingStatus(BookingStatus.fromMappedValue(status));
-        cricketLaneBookingRepository.save(cricketLaneBooking);
 
         if (status.equalsIgnoreCase(BookingStatus.SUCCESS.getMappedValue())){
             sendConfirmationEmail(cricketLaneBooking);
+            cricketLaneBooking.setBookingStatus(BookingStatus.fromMappedValue(status));
+            cricketLaneBookingRepository.save(cricketLaneBooking);
         }
 
         return new ResponseDto(BOOKING_STATUS_UPDATED);
@@ -161,13 +166,13 @@ public class BookingService {
                 .map(String::valueOf)
                 .collect(Collectors.joining(", "));
 
-        Duration duration = Duration.between(cricketLaneBooking.getFromTime(),cricketLaneBooking.getToTime());
+        Duration duration = Duration.between(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime());
 
         data.put("laneNumber", lanes);
         data.put("date", dates);
         data.put("time", cricketLaneBooking.getFromTime());
         data.put("duration", duration.toHours() + " hours");
-        data.put("bookingReference", "REF-001");
+        data.put("bookingReference", generateUniqueReference());
 
         emailDataDto.setData(data);
 
@@ -178,6 +183,12 @@ public class BookingService {
         }
     }
 
+    private String generateUniqueReference() {
+        int number;
+        do {
+            number = 100000 + random.nextInt(900000); // Generates a number between 100000-999999
+        } while (!generatedNumbers.add(number)); // Ensures uniqueness
 
-
+        return "REF-" + number;
+    }
 }

@@ -50,7 +50,7 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
             "LEFT JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
             "WHERE s.laneId = :laneId " +
             "AND b.bookingDate BETWEEN :fromDate AND :toDate " +
-            "AND (c.bookingStatus = 'SUCCESS' OR c.bookingStatus = 'PENDING')")
+            "AND (c.bookingStatus = 'SUCCESS')")
     List<BookingResponseDto> getAllBookingsForCalenderUser(String laneId, LocalDate fromDate,LocalDate toDate);
 
     @Query("SELECT COUNT(c) > 0 " +
