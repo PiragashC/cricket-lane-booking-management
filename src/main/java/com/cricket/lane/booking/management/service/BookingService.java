@@ -137,10 +137,11 @@ public class BookingService {
         CricketLaneBooking cricketLaneBooking = cricketLaneBookingRepository.findById(bookingId)
                 .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
 
+        cricketLaneBooking.setBookingStatus(BookingStatus.fromMappedValue(status));
+        cricketLaneBookingRepository.save(cricketLaneBooking);
+
         if (status.equalsIgnoreCase(BookingStatus.SUCCESS.getMappedValue())){
             sendConfirmationEmail(cricketLaneBooking);
-            cricketLaneBooking.setBookingStatus(BookingStatus.fromMappedValue(status));
-            cricketLaneBookingRepository.save(cricketLaneBooking);
         }
 
         return new ResponseDto(BOOKING_STATUS_UPDATED);
@@ -186,8 +187,8 @@ public class BookingService {
     private String generateUniqueReference() {
         int number;
         do {
-            number = 100000 + random.nextInt(900000); // Generates a number between 100000-999999
-        } while (!generatedNumbers.add(number)); // Ensures uniqueness
+            number = 100000 + random.nextInt(900000);
+        } while (!generatedNumbers.add(number));
 
         return "REF-" + number;
     }
