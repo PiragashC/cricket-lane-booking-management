@@ -13,5 +13,5 @@ public class CalenderResponseDto {
     private String laneName;
     private String laneId;
     private List<BookingResponseDto> bookingResponseDtos;
-    public List<WeekMonthViewResponseDto> weekMonthViewResponseDtos;
+    private List<WeekMonthViewResponseDto> weekMonthViewResponseDtos;
 }

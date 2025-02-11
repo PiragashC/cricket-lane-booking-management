@@ -61,20 +61,22 @@ public class BookingService {
         return responseDto;
     }
 
-    public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime,Integer noOfDates) {
+    public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime, Integer noOfDates) {
         BookingPriceDto bookingPriceDto = new BookingPriceDto();
         double ratePerLane = 40.0;
 
         long durationMinutes = Duration.between(fromTime, toTime).toMinutes();
-
         long durationHours = (long) Math.ceil(durationMinutes / 60.0);
 
         BigDecimal totalPrice = BigDecimal.valueOf(noOfLanes * durationHours * ratePerLane * noOfDates);
 
-        bookingPriceDto.setBookingPrice(totalPrice);
+        BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
+
+        bookingPriceDto.setBookingPrice(totalPriceWithTax);
 
         return bookingPriceDto;
     }
+
 
     public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> dates) {
         return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates);
