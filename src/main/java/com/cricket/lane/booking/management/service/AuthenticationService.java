@@ -7,8 +7,10 @@ import com.cricket.lane.booking.management.config.JwtService;
 import com.cricket.lane.booking.management.config.RefreshTokenService;
 import com.cricket.lane.booking.management.entity.RefreshToken;
 import com.cricket.lane.booking.management.entity.User;
+import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
@@ -23,7 +25,7 @@ public class AuthenticationService {
 
     public AuthResponse authenticate(AuthRequest request) {
         User user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
+                .orElseThrow(() -> new ServiceException("Invalid login","Bad request", HttpStatus.BAD_REQUEST));
         String jwtToken = jwtService.generateToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
         return AuthResponse.builder()
