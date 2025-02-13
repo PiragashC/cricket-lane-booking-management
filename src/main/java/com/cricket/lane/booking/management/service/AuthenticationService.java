@@ -3,6 +3,7 @@ package com.cricket.lane.booking.management.service;
 import com.cricket.lane.booking.management.api.dto.AuthRequest;
 import com.cricket.lane.booking.management.api.dto.AuthResponse;
 import com.cricket.lane.booking.management.api.dto.RefreshTokenRequest;
+import com.cricket.lane.booking.management.api.dto.UserDto;
 import com.cricket.lane.booking.management.config.JwtService;
 import com.cricket.lane.booking.management.config.RefreshTokenService;
 import com.cricket.lane.booking.management.entity.RefreshToken;
@@ -28,10 +29,15 @@ public class AuthenticationService {
                 .orElseThrow(() -> new ServiceException("Invalid login","Bad request", HttpStatus.BAD_REQUEST));
         String jwtToken = jwtService.generateToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
+
+        UserDto userDto = new UserDto();
+        userDto.setUserName(user.getFirstName() + " " + user.getLastName());
+        userDto.setEmail(user.getEmail());
+        userDto.setId(user.getId());
         return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken.getToken())
-                .userName(user.getFirstName() + " " + user.getLastName())
+                .userDto(userDto)
                 .build();
     }
 
