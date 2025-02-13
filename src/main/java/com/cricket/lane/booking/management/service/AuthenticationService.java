@@ -26,11 +26,10 @@ public class AuthenticationService {
                 .orElseThrow();
         String jwtToken = jwtService.generateToken(user);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
-        AuthResponse authResponse = new AuthResponse();
-        authResponse.setUserName(user.getFirstName() + " " + user.getLastName());
-        return authResponse.builder()
+        return AuthResponse.builder()
                 .accessToken(jwtToken)
                 .refreshToken(refreshToken.getToken())
+                .userName(user.getFirstName() + " " + user.getLastName())
                 .build();
     }
 
