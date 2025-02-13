@@ -35,7 +35,7 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
     );
 
 
-    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingResponseDto(c.id, CONCAT(c.firstName,' ', c.lastName) AS userName,c.fromTime,c.toTime,c.telephoneNumber) " +
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingResponseDto(c.id, CONCAT(c.firstName,' ', c.lastName) AS userName,c.fromTime,c.toTime,c.telephoneNumber,c.bookingPrice,c.bookingStatus,c.bookingTitle) " +
             "FROM CricketLaneBooking c " +
             "LEFT JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
             "LEFT JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
