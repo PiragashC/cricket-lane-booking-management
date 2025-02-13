@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta charset="UTF-8">
+    <title>Booking Confirmation</title>
+    <style>
+        /* Previous styles remain the same */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            text-align: center;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #163b6d 0%, #1a4a8d 100%);
+            padding: 25px;
+            color: #fff;
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            border-bottom: 4px solid #4caf50;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0px 10px 25px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            color: #163b6d;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+            font-size: 20px;
+            padding: 2px 8px;
+            background: #f0f9f0;
+            border-radius: 4px;
+        }
+        .booking-details {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #e9ecef;
+        }
+        .cancellation-policy {
+            background: #fff8f8;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 1px solid #ffe0e0;
+        }
+        ul {
+            text-align: left;
+            display: inline-block;
+            margin: 20px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin: 10px 0;
+            color: #444;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            font-size: 16px;
+            color: #666;
+        }
+        .logo {
+            margin-top: 30px;
+            max-width: 200px;
+            height: auto;
+        }
+        .facility-disclaimer {
+            margin-top: 20px;
+            padding: 15px;
+            font-size: 12px;
+            color: #666;
+            background: #f8f9fa;
+            border-radius: 8px;
+            text-align: left;
+            border: 1px solid #e9ecef;
+        }
+        .facility-disclaimer h3 {
+            font-size: 14px;
+            color: #444;
+            margin-bottom: 10px;
+        }
+        @media (max-width: 600px) {
+            .container {
+                width: 90%;
+                padding: 20px;
+            }
+            h2 {
+                font-size: 22px;
+            }
+            p {
+                font-size: 16px;
+            }
+            .highlight {
+                font-size: 18px;
+            }
+            .logo {
+                max-width: 150px;
+            }
+            .facility-disclaimer {
+                font-size: 11px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">KOVER DRIVE</div>
+
+<div class="container">
+    <h2>Dear <span th:text="${name}">Customer</span>,</h2>
+    <p>Thank you for booking an indoor cricket lane at Kover Drive. Your reservation has been successfully confirmed.</p>
+
+    <div class="booking-details">
+        <h2>Booking Details:</h2>
+        <p><strong>Date:</strong> <span class="highlight" th:text="${date}">[Insert Date]</span></p>
+        <p><strong>Lane Number:</strong> <span class="highlight" th:text="${laneNumber}">[1/2/3]</span></p>
+        <p><strong>Time:</strong> <span class="highlight" th:text="${time}">[Insert Time]</span></p>
+        <p><strong>Duration:</strong> <span class="highlight" th:text="${duration}">[Insert Duration]</span></p>
+        <p><strong>Booking Reference:</strong> <span class="highlight" th:text="${bookingReference}">[Insert Reference Number]</span></p>
+    </div>
+
+    <p>If you need to modify or cancel your booking, please contact us at <strong>koverdrivelondonon@gmail.com</strong> or call <strong>+1 (403) 681-1246 | +1 (519) 702-2683</strong> in advance.</p>
+
+    <div class="cancellation-policy">
+        <h2>Cancellation Policy:</h2>
+        <p>Cancellations and changes to all reservations (drop-in/court bookings) follow the policy outlined below:</p>
+        <ul>
+            <li><strong>24 hours or more:</strong> Full refund provided.</li>
+            <li><strong>24-12 hours:</strong> 50% refund credited to the account.</li>
+            <li><strong>Less than 12 hours:</strong> No refund.</li>
+        </ul>
+    </div>
+
+    <!-- Moved Facility Disclaimer here -->
+    <div class="facility-disclaimer">
+        <h3>Facility Disclaimer</h3>
+        <p>By using this facility, you acknowledge and agree to the following terms:</p>
+        <ol>
+            <li>Assumption of Risk: Participation in cricket activities is at your own risk. We are not responsible for any injury, accident, or harm that may occur while using the facility.</li>
+            <li>Property Damage: Any damage to the facility, equipment, or property caused by you or your group will be your sole responsibility. You agree to cover the costs for repairs or replacements.</li>
+        </ol>
+        <p>By entering and using this facility, you agree to these terms.</p>
+    </div>
+
+    <p>We look forward to welcoming you to Kover Drive. Enjoy your practice session!</p>
+
+    <div class="footer">
+        <p>Best regards,<br>
+            <strong>Kover Drive Team</strong><br>
+            Email: koverdrivelondonon@gmail.com<br>
+            Phone: +1 (403) 681-1246 | +1 (519) 702-2683</p>
+
+        <img src="https://res.cloudinary.com/dwx7x0vxr/image/upload/v1738999522/KOVER_logo_without_background_4_j1ztlz.png" alt="Kover Drive Logo" class="logo">
+    </div>
+</div>
+
+</body>
+</html>
