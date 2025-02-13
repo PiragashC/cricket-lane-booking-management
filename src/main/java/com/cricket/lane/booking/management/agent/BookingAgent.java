@@ -37,4 +37,8 @@ public class BookingAgent {
     public ResponseDto updateStatus(String bookingId, String status) {
         return bookingService.updateStatus(bookingId,status);
     }
+
+    public ResponseDto deleteBooking(String bookingId) {
+        return bookingService.deleteBooking(bookingId);
+    }
 }

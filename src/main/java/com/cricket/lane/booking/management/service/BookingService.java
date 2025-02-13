@@ -44,14 +44,14 @@ public class BookingService {
                 .map(bookingDate -> {
                     Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate());
                     if (checkLaneFree.equals(Boolean.TRUE)) {
-                            throw new ServiceException("Lane already booked on " +bookingDate.getBookingDate() +
-                                    " from " + cricketLaneBooking.getFromTime() + " to " + cricketLaneBooking.getToTime(),BAD_REQUEST, HttpStatus.BAD_REQUEST);
+                        throw new ServiceException("Lane already booked on " + bookingDate.getBookingDate() +
+                                " from " + cricketLaneBooking.getFromTime() + " to " + cricketLaneBooking.getToTime(), BAD_REQUEST, HttpStatus.BAD_REQUEST);
                     }
                     return bookingDate;
                 }).collect(Collectors.toSet());
         cricketLaneBooking.getSelectedLanes().stream()
                 .map(selectedLane -> {
-                    laneRepository.findById(selectedLane.getLaneId()).orElseThrow(() -> new ServiceException(LANE_NOT_FOUND,BAD_REQUEST,HttpStatus.BAD_REQUEST));
+                    laneRepository.findById(selectedLane.getLaneId()).orElseThrow(() -> new ServiceException(LANE_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
                     return selectedLane;
                 }).collect(Collectors.toSet());
         CricketLaneBooking savedBooking = cricketLaneBookingRepository.save(cricketLaneBooking);
@@ -82,7 +82,7 @@ public class BookingService {
         return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates);
     }
 
-    public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate, LocalDate toDate,String token) {
+    public CalenderResponseDto getAllBookingsForCalender(String laneId, LocalDate fromDate, LocalDate toDate, String token) {
         CalenderResponseDto calenderResponseDto = new CalenderResponseDto();
         String laneName = laneRepository.findLaneNameById(laneId);
         List<WeekMonthViewResponseDto> weekMonthViewResponseDtos = new ArrayList<>();
@@ -95,7 +95,7 @@ public class BookingService {
                 calenderResponseDto.setBookingDate(fromDate);
                 calenderResponseDto.setLaneName(laneName);
                 calenderResponseDto.setBookingResponseDtos(bookingResponseDtos);
-            }else {
+            } else {
                 List<BookingResponseDto> bookingResponseDtos = cricketLaneBookingRepository.getAllBookingsForCalenderAdmin(laneId, fromDate, toDate);
                 calenderResponseDto.setBookingDate(fromDate);
                 calenderResponseDto.setLaneName(laneName);
@@ -111,7 +111,7 @@ public class BookingService {
                     weekMonthViewResponseDto.setBookingDate(date);
                     weekMonthViewResponseDto.setBookingResponseDtos(bookingResponseDtosForDate);
                     weekMonthViewResponseDtos.add(weekMonthViewResponseDto);
-                }else {
+                } else {
                     List<BookingResponseDto> bookingResponseDtosForDate = cricketLaneBookingRepository.getAllBookingsForCalenderAdmin(laneId, date, date);
                     WeekMonthViewResponseDto weekMonthViewResponseDto = new WeekMonthViewResponseDto();
                     weekMonthViewResponseDto.setBookingDate(date);
@@ -142,7 +142,7 @@ public class BookingService {
         cricketLaneBooking.setBookingStatus(BookingStatus.fromMappedValue(status));
         cricketLaneBookingRepository.save(cricketLaneBooking);
 
-        if (status.equalsIgnoreCase(BookingStatus.SUCCESS.getMappedValue())){
+        if (status.equalsIgnoreCase(BookingStatus.SUCCESS.getMappedValue())) {
             sendConfirmationEmail(cricketLaneBooking);
         }
 
@@ -193,5 +193,13 @@ public class BookingService {
         } while (!generatedNumbers.add(number));
 
         return "REF-" + number;
+    }
+
+    public ResponseDto deleteBooking(String bookingId) {
+        cricketLaneBookingRepository.findById(bookingId)
+                .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
+        cricketLaneBookingRepository.deleteById(bookingId);
+
+        return new ResponseDto("Booking deleted");
     }
 }

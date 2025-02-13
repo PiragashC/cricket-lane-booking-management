@@ -63,4 +63,9 @@ public class BookingController {
     public ResponseDto createLane(@RequestBody LaneDto laneDto){
         return laneAgent.createLane(laneDto);
     }
+
+    @DeleteMapping
+    public ResponseDto deleteBooking(@RequestParam(value = "bookingId") String bookingId){
+        return bookingAgent.deleteBooking(bookingId);
+    }
 }
