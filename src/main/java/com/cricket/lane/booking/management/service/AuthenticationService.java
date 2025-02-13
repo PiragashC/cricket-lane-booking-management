@@ -22,12 +22,6 @@ public class AuthenticationService {
     private final RefreshTokenService refreshTokenService;
 
     public AuthResponse authenticate(AuthRequest request) {
-//        authenticationManager.authenticate(
-//                new UsernamePasswordAuthenticationToken(
-//                        request.getEmail(),
-//                        request.getPassword()
-//                )
-//        );
         User user = repository.findByEmail(request.getEmail())
                 .orElseThrow();
         String jwtToken = jwtService.generateToken(user);
