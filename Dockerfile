@@ -1,5 +1,14 @@
+# Use an official OpenJDK runtime as the base image
 FROM openjdk:17-jdk-slim
+
+# Set the working directory inside the container
 WORKDIR /app
-COPY --chown=appuser:appuser target/*.jar /app/app.jar
+
+# Copy the application JAR file into the container
+ADD target/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar /app/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar
+
+# Expose the application's port (adjust as needed)
 EXPOSE 8080
-CMD ["java", "-jar", "/app/app.jar"]
+
+# Run the application
+CMD ["java", "-jar", "/app/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar"]
