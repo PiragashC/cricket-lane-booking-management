@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "https://sports-booking-hub.onrender.com")
+@CrossOrigin(origins = "*")
 public class AuthController {
     private final AuthenticationService service;
 

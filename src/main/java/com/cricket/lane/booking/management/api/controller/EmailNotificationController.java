@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/emails")
 @AllArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "https://sports-booking-hub.onrender.com")
+@CrossOrigin(origins = "*")
 public class EmailNotificationController {
 
     private final EmailNotificationService emailNotificationService;
