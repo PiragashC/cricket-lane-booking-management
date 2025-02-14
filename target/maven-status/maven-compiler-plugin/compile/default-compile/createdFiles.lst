@@ -35,6 +35,7 @@ com\cricket\lane\booking\management\api\dto\BookingPriceDto.class
 com\cricket\lane\booking\management\repository\RefreshTokenRepository.class
 com\cricket\lane\booking\management\api\dto\AuthResponse$AuthResponseBuilder.class
 com\cricket\lane\booking\management\api\dto\PaymentResponseDto.class
+com\cricket\lane\booking\management\api\dto\UserDto.class
 com\cricket\lane\booking\management\config\StripeConfig.class
 com\cricket\lane\booking\management\agent\converter\BookingConverter.class
 com\cricket\lane\booking\management\exception\ServiceException.class

@@ -52,6 +52,7 @@ D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\m
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\api\controller\LanesController.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\entity\RefreshToken.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\entity\SelectedLanes.java
+D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\api\dto\UserDto.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\service\support\TemplateEngineProcessor.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\config\QueueConfig.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\api\dto\BookingPriceDto.java
