@@ -31,6 +31,7 @@ D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\m
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\api\controller\BookingController.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\api\dto\PaymentResponseDto.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\repository\CricketLaneBookingRepository.java
+D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\config\CorsConfig.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\api\dto\SelectedLanesDto.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\api\controller\advice\ControllerExceptionHandler.java
 D:\java\cricket-lane-booking-management\src\main\java\com\cricket\lane\booking\management\entity\CricketLaneBooking.java

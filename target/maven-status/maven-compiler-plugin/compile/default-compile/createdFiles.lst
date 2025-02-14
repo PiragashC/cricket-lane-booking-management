@@ -25,6 +25,7 @@ com\cricket\lane\booking\management\service\support\TemplateResolver.class
 com\cricket\lane\booking\management\entity\RefreshToken$RefreshTokenBuilder.class
 com\cricket\lane\booking\management\config\RefreshTokenService.class
 com\cricket\lane\booking\management\service\BookingService.class
+com\cricket\lane\booking\management\config\CorsConfig$1.class
 com\cricket\lane\booking\management\api\dto\AuthRequest.class
 com\cricket\lane\booking\management\api\dto\AvailabilityResponseDto.class
 com\cricket\lane\booking\management\api\dto\CricketLaneBookingDto.class
@@ -47,6 +48,7 @@ com\cricket\lane\booking\management\api\dto\CalenderResponseDto.class
 com\cricket\lane\booking\management\entity\SelectedLanes.class
 com\cricket\lane\booking\management\api\dto\RefreshTokenRequest.class
 com\cricket\lane\booking\management\repository\LaneRepository.class
+com\cricket\lane\booking\management\config\CorsConfig.class
 com\cricket\lane\booking\management\api\controller\advice\ControllerExceptionHandler$ApiError.class
 com\cricket\lane\booking\management\config\QueueConfig.class
 com\cricket\lane\booking\management\entity\SelectedLanes$SelectedLanesBuilder.class
