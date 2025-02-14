@@ -13,7 +13,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/booking")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "https://sports-booking-hub.onrender.com")
 public class BookingController {
 
     private final BookingAgent bookingAgent;
