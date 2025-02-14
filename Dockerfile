@@ -18,6 +18,6 @@ COPY . .
 RUN mvn clean package -DskipTests
 
 FROM openjdk:17.0.1-jdk-slim
-COPY --from-build /target/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar /app/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar
+COPY /target/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar /app/cricket_lane_booking_management-1.0.0-SNAPSHOT.jar
 EXPOSE 8080
 ENTRYPOINT ["java","-jar","cricket_lane_booking_management-1.0.0-SNAPSHOT.jar"]
