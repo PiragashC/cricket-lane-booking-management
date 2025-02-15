@@ -11,7 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("api/v1/lanes")
 @RequiredArgsConstructor
-@CrossOrigin(origins = {"http://localhost:3000", "https://sports-booking-hub.onrender.com"})
+@CrossOrigin(origins = {"http://localhost:3000", "https://sports-booking-hub.onrender.com","https://koverdrivesports.ca"})
 public class LanesController {
 
     private final LaneAgent laneAgent;
