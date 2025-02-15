@@ -43,6 +43,7 @@ public class BookingService {
         cricketLaneBooking.getBookingDates().stream()
                 .map(bookingDate -> {
                     Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate());
+                    log.info("checkLane---{}",checkLaneFree);
                     if (checkLaneFree.equals(Boolean.TRUE)) {
                         throw new ServiceException("Lane already booked on " + bookingDate.getBookingDate() +
                                 " from " + cricketLaneBooking.getFromTime() + " to " + cricketLaneBooking.getToTime(), BAD_REQUEST, HttpStatus.BAD_REQUEST);

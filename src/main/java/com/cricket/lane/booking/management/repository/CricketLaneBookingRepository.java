@@ -58,7 +58,8 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
             "JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
             "JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
             "WHERE b.bookingDate = :date " +
-            "AND (:fromTime < c.toTime AND :toTime > c.fromTime)")
+            "AND (:fromTime < c.toTime AND :toTime > c.fromTime) " +
+            "AND (c.bookingStatus = 'SUCCESS' OR c.bookingStatus = 'PENDING')")
     Boolean checkLaneFree(@Param("fromTime") LocalTime fromTime,
                           @Param("toTime") LocalTime toTime,
                           @Param("date") LocalDate date);
