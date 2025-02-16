@@ -75,9 +75,9 @@ public class BookingService {
 
         BigDecimal totalPrice = BigDecimal.valueOf(noOfLanes * durationHours * ratePerLane * noOfDates);
 
-//        BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
+        BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
 
-        bookingPriceDto.setBookingPrice(totalPrice);
+        bookingPriceDto.setBookingPrice(totalPriceWithTax);
 
         return bookingPriceDto;
     }

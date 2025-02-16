@@ -31,10 +31,25 @@ public class PaymentService {
     public ResponseEntity<?> createPaymentIntent(String bookingId) {
         try {
             CricketLaneBooking cricketLaneBooking = cricketLaneBookingRepository.findById(bookingId)
-                    .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND,BAD_REQUEST, HttpStatus.BAD_REQUEST));
+                    .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
+
+            // Assuming the tax rate for HST (Canada 13%) or get from Stripe Tax API
+            BigDecimal taxRate = BigDecimal.valueOf(0.13); // Example: 13% HST for Canada
+            BigDecimal bookingPrice = cricketLaneBooking.getBookingPrice();
+
+            // Calculate tax (e.g., 13% HST)
+            BigDecimal taxAmount = bookingPrice.multiply(taxRate);
+
+            // Total amount with tax
+            BigDecimal totalAmountWithTax = bookingPrice.add(taxAmount);
+
+            // Convert total amount to cents (Stripe expects amounts in the smallest currency unit, e.g., cents)
+            long amountInCents = totalAmountWithTax.multiply(BigDecimal.valueOf(100)).longValue();
+
+            // Create PaymentIntent with tax
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setCurrency("cad")
-                    .setAmount(cricketLaneBooking.getBookingPrice().multiply(BigDecimal.valueOf(100)).longValue())
+                    .setAmount(amountInCents)  // Total amount including tax
                     .setAutomaticPaymentMethods(
                             PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
                                     .setEnabled(true)
@@ -52,6 +67,7 @@ public class PaymentService {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+
 
     public PaymentResponseDto getStripePublishableKey() {
         PaymentResponseDto paymentResponseDto = new PaymentResponseDto();

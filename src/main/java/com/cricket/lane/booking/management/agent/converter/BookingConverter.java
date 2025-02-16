@@ -37,8 +37,8 @@ public class BookingConverter {
 
         Integer payment = totalHours * noOfLanes;
         BigDecimal totalPayment = BigDecimal.valueOf(payment).multiply(BigDecimal.valueOf(40.0));
-//        BigDecimal totalPriceWithTax = totalPayment.multiply(BigDecimal.valueOf(1.13));
-        cricketLaneBooking.setBookingPrice(totalPayment);
+        BigDecimal totalPriceWithTax = totalPayment.multiply(BigDecimal.valueOf(1.13));
+        cricketLaneBooking.setBookingPrice(totalPriceWithTax);
 
         cricketLaneBooking.setId(cricketLaneBookingDto.getId());
         cricketLaneBooking.setBookingDetails(cricketLaneBookingDto.getBookingDetails());
