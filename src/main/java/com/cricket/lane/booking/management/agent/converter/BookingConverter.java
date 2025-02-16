@@ -51,7 +51,7 @@ public class BookingConverter {
         cricketLaneBooking.setTelephoneNumber(cricketLaneBookingDto.getTelephoneNumber());
         cricketLaneBooking.setOrganization(cricketLaneBookingDto.getOrganization());
         cricketLaneBooking.setBookingStatus(BookingStatus.PENDING);
-
+        cricketLaneBooking.setCreatedDate(LocalDate.now());
         if (cricketLaneBookingDto.getBookingDatesDtos() != null) {
             cricketLaneBooking.setBookingDates(convertBookingDates(cricketLaneBookingDto.getBookingDatesDtos()));
         }

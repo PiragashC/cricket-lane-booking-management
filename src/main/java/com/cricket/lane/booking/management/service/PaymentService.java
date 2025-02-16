@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.math.BigDecimal;
+
 import static com.cricket.lane.booking.management.constants.ApplicationConstants.BAD_REQUEST;
 import static com.cricket.lane.booking.management.constants.ApplicationConstants.BOOKING_ID_NOT_FOUND;
 
@@ -32,7 +34,7 @@ public class PaymentService {
                     .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND,BAD_REQUEST, HttpStatus.BAD_REQUEST));
             PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
                     .setCurrency("cad")
-                    .setAmount(cricketLaneBooking.getBookingPrice().longValue())
+                    .setAmount(cricketLaneBooking.getBookingPrice().multiply(BigDecimal.valueOf(100)).longValue())
                     .setAutomaticPaymentMethods(
                             PaymentIntentCreateParams.AutomaticPaymentMethods.builder()
                                     .setEnabled(true)

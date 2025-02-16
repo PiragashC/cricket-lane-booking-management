@@ -10,6 +10,7 @@ import com.cricket.lane.booking.management.repository.LaneRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -38,6 +39,9 @@ public class BookingService {
     private static final SecureRandom random = new SecureRandom();
 
     private static final Set<Integer> generatedNumbers = new HashSet<>();
+
+    @Value("${admin.email}")
+    private String adminEmail;
 
     public ResponseDto bookingCricketLane(CricketLaneBooking cricketLaneBooking) {
         cricketLaneBooking.getBookingDates().stream()
@@ -202,5 +206,38 @@ public class BookingService {
         cricketLaneBookingRepository.deleteById(bookingId);
 
         return new ResponseDto("Booking deleted");
+    }
+
+    public ResponseDto changeStatus() {
+        LocalDate currentDate = LocalDate.now();
+        LocalTime currentTimeMinus30 = LocalTime.now().minusMinutes(30);
+
+        List<CricketLaneBooking> cricketLaneBookings = cricketLaneBookingRepository.stillPending(currentDate, currentTimeMinus30);
+        cricketLaneBookings.stream()
+                .map(cricketLaneBooking -> {
+                    cricketLaneBooking.setBookingStatus(BookingStatus.FAILURE);
+                    cricketLaneBookingRepository.save(cricketLaneBooking);
+                    return cricketLaneBookings;
+                }).toList();
+
+        return new ResponseDto("Status updated");
+    }
+
+    public ResponseDto reachUs(ReachUsDto reachUsDto) {
+        EmailDataDto emailDataDto = new EmailDataDto();
+        emailDataDto.setRecipients(List.of(adminEmail));
+        emailDataDto.setServiceProvider("kover_drive");
+        emailDataDto.setSubject("New Contact Inquiry");
+        emailDataDto.setMailTemplateName("reach_us");
+        Map<String, Object> emailData = new HashMap<>();
+        emailData.put("name", reachUsDto.getName());
+        emailData.put("email", reachUsDto.getEmail());
+        emailData.put("subject", reachUsDto.getSubject());
+        emailData.put("message", reachUsDto.getMessage());
+
+        emailDataDto.setData(emailData);
+        emailNotificationService.send(emailDataDto);
+
+        return new ResponseDto("Mail sent to admin");
     }
 }

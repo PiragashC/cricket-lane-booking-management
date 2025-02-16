@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Contact Inquiry</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #f5f5f5;
+            text-align: center;
+            color: #333;
+            line-height: 1.6;
+        }
+        .header {
+            background: linear-gradient(135deg, #163b6d 0%, #1a4a8d 100%);
+            padding: 20px;
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: 30px auto;
+            background: #ffffff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #163b6d;
+            margin-bottom: 20px;
+            font-size: 22px;
+            font-weight: bold;
+            border-bottom: 2px solid #4caf50;
+            padding-bottom: 10px;
+            display: inline-block;
+        }
+        p {
+            font-size: 18px;
+            color: #333;
+            margin: 15px 0;
+        }
+        .highlight {
+            font-weight: bold;
+            color: #4caf50;
+        }
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            font-size: 16px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">New Contact Inquiry</div>
+
+<div class="container">
+    <h2>Dear Admin,</h2>
+    <p>You have received a new inquiry from a user.</p>
+
+    <p><strong>Name:</strong> <span class="highlight" th:text="${name}">[User Name]</span></p>
+    <p><strong>Email:</strong> <span class="highlight" th:text="${email}">[User Email]</span></p>
+    <p><strong>Subject:</strong> <span class="highlight" th:text="${subject}">[Inquiry Subject]</span></p>
+    <p><strong>Message:</strong></p>
+    <p style="background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: left; border: 1px solid #e9ecef;"
+       th:text="${message}">[User Message]</p>
+
+    <p>Please respond to the user as soon as possible.</p>
+
+    <div class="footer">
+        <p>Best regards,<br>
+            <strong>Kover Drive Team</strong><br>
+            Email: koverdrivelondonon@gmail.com<br>
+            Phone: +1 (403) 681-1246 | +1 (519) 702-2683</p>
+    </div>
+</div>
+
+</body>
+</html>

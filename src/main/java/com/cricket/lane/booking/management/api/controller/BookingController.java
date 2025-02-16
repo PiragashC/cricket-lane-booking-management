@@ -68,4 +68,14 @@ public class BookingController {
     public ResponseDto deleteBooking(@RequestParam(value = "bookingId") String bookingId){
         return bookingAgent.deleteBooking(bookingId);
     }
+
+    @PutMapping("/change-status")
+    public ResponseDto changeStatus(){
+        return bookingAgent.changeStatus();
+    }
+
+    @PostMapping("/reach-us")
+    public ResponseDto reachUs(@RequestBody ReachUsDto reachUsDto){
+        return bookingAgent.reachUs(reachUsDto);
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Set;
@@ -63,5 +64,12 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
     Boolean checkLaneFree(@Param("fromTime") LocalTime fromTime,
                           @Param("toTime") LocalTime toTime,
                           @Param("date") LocalDate date);
+
+    @Query("SELECT c " +
+            "FROM CricketLaneBooking c " +
+            "WHERE c.fromTime < :time " +
+            "AND c.createdDate = :date " +
+            "AND c.bookingStatus = 'PENDING'")
+    List<CricketLaneBooking> stillPending(LocalDate date,LocalTime time);
 
 }

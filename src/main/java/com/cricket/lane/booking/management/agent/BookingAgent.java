@@ -41,4 +41,12 @@ public class BookingAgent {
     public ResponseDto deleteBooking(String bookingId) {
         return bookingService.deleteBooking(bookingId);
     }
+
+    public ResponseDto changeStatus() {
+        return bookingService.changeStatus();
+    }
+
+    public ResponseDto reachUs(ReachUsDto reachUsDto) {
+        return bookingService.reachUs(reachUsDto);
+    }
 }
