@@ -68,7 +68,7 @@ public class BookingService {
 
     public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime, Integer noOfDates) {
         BookingPriceDto bookingPriceDto = new BookingPriceDto();
-        double ratePerLane = 40.0;
+        double ratePerLane = 45.0;
 
         long durationMinutes = Duration.between(fromTime, toTime).toMinutes();
         long durationHours = (long) Math.ceil(durationMinutes / 60.0);
