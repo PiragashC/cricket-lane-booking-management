@@ -18,16 +18,15 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
 
     @Query("SELECT DISTINCT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id, l.laneName) " +
             "FROM Lanes l " +
-            "LEFT JOIN SelectedLanes s ON l.id = s.laneId " +
-            "LEFT JOIN CricketLaneBooking c ON s.cricketLaneBookingId = c.id " +
             "WHERE l.id NOT IN ( " +
             "    SELECT DISTINCT sl.laneId " +
             "    FROM SelectedLanes sl " +
-            "    JOIN CricketLaneBooking cb ON sl.cricketLaneBookingId = cb.id " +
-            "    JOIN BookingDates bd ON cb.id = bd.cricketLaneBookingId " +
+            "    INNER JOIN CricketLaneBooking cb ON sl.cricketLaneBookingId = cb.id " +
+            "    INNER JOIN BookingDates bd ON cb.id = bd.cricketLaneBookingId " +
             "    WHERE bd.bookingDate IN :dates " +
-            "    AND cb.fromTime < :toTime " +
-            "    AND cb.toTime > :fromTime " +
+            "    AND cb.fromTime <= :toTime " +
+            "    AND cb.toTime >= :fromTime " +
+            "    AND cb.bookingStatus IN ('SUCCESS', 'PENDING') " +
             ")")
     List<LaneDto> findAvailableLanes(
             @Param("fromTime") LocalTime fromTime,
