@@ -46,18 +46,20 @@ public class BookingService {
     public ResponseDto bookingCricketLane(CricketLaneBooking cricketLaneBooking) {
         cricketLaneBooking.getBookingDates().stream()
                 .map(bookingDate -> {
-                    Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate());
-                    log.info("checkLane---{}",checkLaneFree);
-                    if (checkLaneFree.equals(Boolean.TRUE)) {
-                        throw new ServiceException("Lane already booked on " + bookingDate.getBookingDate() +
-                                " from " + cricketLaneBooking.getFromTime() + " to " + cricketLaneBooking.getToTime(), BAD_REQUEST, HttpStatus.BAD_REQUEST);
-                    }
+
+
+                    cricketLaneBooking.getSelectedLanes().stream()
+                            .map(selectedLane -> {
+                                Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate(),selectedLane.getLaneId());
+                                log.info("checkLane---{}", checkLaneFree);
+                                if (checkLaneFree.equals(Boolean.TRUE)) {
+                                    throw new ServiceException("Lane already booked on " + bookingDate.getBookingDate() +
+                                            " from " + cricketLaneBooking.getFromTime() + " to " + cricketLaneBooking.getToTime(), BAD_REQUEST, HttpStatus.BAD_REQUEST);
+                                }
+                                laneRepository.findById(selectedLane.getLaneId()).orElseThrow(() -> new ServiceException(LANE_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
+                                return selectedLane;
+                            }).collect(Collectors.toSet());
                     return bookingDate;
-                }).collect(Collectors.toSet());
-        cricketLaneBooking.getSelectedLanes().stream()
-                .map(selectedLane -> {
-                    laneRepository.findById(selectedLane.getLaneId()).orElseThrow(() -> new ServiceException(LANE_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
-                    return selectedLane;
                 }).collect(Collectors.toSet());
         CricketLaneBooking savedBooking = cricketLaneBookingRepository.save(cricketLaneBooking);
         ResponseDto responseDto = new ResponseDto();
