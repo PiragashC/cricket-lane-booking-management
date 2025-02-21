@@ -5,6 +5,7 @@ import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
 import com.cricket.lane.booking.management.entity.SelectedLanes;
 import com.cricket.lane.booking.management.enums.BookingStatus;
+import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class BookingConverter {
         if (cricketLaneBookingDto.getSelectedLanesDtos() != null) {
             cricketLaneBooking.setSelectedLanes(convertSelectedLanes(cricketLaneBookingDto.getSelectedLanesDtos()));
         }
-
+        cricketLaneBooking.setBookingType(BookingType.fromMappedValue(cricketLaneBookingDto.getBookingType()));
         return cricketLaneBooking;
     }
 

@@ -78,4 +78,25 @@ public class BookingController {
     public ResponseDto reachUs(@RequestBody ReachUsDto reachUsDto){
         return bookingAgent.reachUs(reachUsDto);
     }
+
+    @GetMapping("/get-all-booking-details")
+    public PaginatedResponseDto<BookingDto> getAllBookingPagination(@RequestParam(value = "fromDate") LocalDate fromDate,
+                                                                    @RequestParam(value = "toDate") LocalDate toDate,
+                                                                    @RequestParam(value = "laneId",required = false) String laneId,
+                                                                    @RequestParam(value = "status",required = false) String status,
+                                                                    @RequestParam(value = "type",required = false) String type,
+                                                                    @RequestParam(value = "page") int page,
+                                                                    @RequestParam(value = "size") int size){
+        BookingSearchDto bookingSearchDto = BookingSearchDto.builder()
+                .fromDate(fromDate)
+                .toDate(toDate)
+                .laneId(laneId)
+                .status(status)
+                .type(type)
+                .page(page)
+                .size(size)
+                .build();
+
+        return bookingAgent.getAllBookingPagination(bookingSearchDto);
+    }
 }

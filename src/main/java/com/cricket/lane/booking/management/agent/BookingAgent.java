@@ -4,6 +4,7 @@ import com.cricket.lane.booking.management.agent.converter.BookingConverter;
 import com.cricket.lane.booking.management.api.dto.*;
 import com.cricket.lane.booking.management.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -48,5 +49,17 @@ public class BookingAgent {
 
     public ResponseDto reachUs(ReachUsDto reachUsDto) {
         return bookingService.reachUs(reachUsDto);
+    }
+
+    public PaginatedResponseDto<BookingDto> getAllBookingPagination(BookingSearchDto bookingSearchDto){
+        Page<BookingDto> bookingDtos = bookingService.getAllBookingPagination(bookingSearchDto);
+        List<BookingDto> bookingDtoList = bookingDtos.getContent();
+
+        PaginatedResponseDto<BookingDto> bookingDtoPaginatedResponseDto = new PaginatedResponseDto<>();
+        bookingDtoPaginatedResponseDto.setData(bookingDtoList);
+        bookingDtoPaginatedResponseDto.setTotalItems(bookingDtos.getTotalElements());
+        bookingDtoPaginatedResponseDto.setCurrentPage(bookingSearchDto.getPage());
+        bookingDtoPaginatedResponseDto.setTotalPages(bookingDtos.getTotalPages());
+        return bookingDtoPaginatedResponseDto;
     }
 }

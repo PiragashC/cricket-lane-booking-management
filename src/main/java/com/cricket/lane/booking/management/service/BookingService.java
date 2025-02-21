@@ -4,6 +4,7 @@ import com.cricket.lane.booking.management.api.dto.*;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
 import com.cricket.lane.booking.management.enums.BookingStatus;
+import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.CricketLaneBookingRepository;
 import com.cricket.lane.booking.management.repository.LaneRepository;
@@ -11,6 +12,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -242,4 +247,27 @@ public class BookingService {
 
         return new ResponseDto("Mail sent to admin");
     }
+
+    public Page<BookingDto> getAllBookingPagination(BookingSearchDto bookingSearchDto) {
+        Pageable pageable = PageRequest.of(bookingSearchDto.getPage() - 1, bookingSearchDto.getSize());
+
+        Page<BookingDto> bookingDtos = cricketLaneBookingRepository.getAllBookingPagination(
+                pageable,
+                bookingSearchDto.getFromDate(),
+                bookingSearchDto.getToDate(),
+                bookingSearchDto.getLaneId(),
+                bookingSearchDto.getStatus() != null && !bookingSearchDto.getStatus().isEmpty() ? BookingStatus.fromMappedValue(bookingSearchDto.getStatus()) : null,
+                bookingSearchDto.getType() != null && !bookingSearchDto.getType().isEmpty() ? BookingType.fromMappedValue(bookingSearchDto.getType()) : null
+        );
+
+        BookingDto.resetCounter();
+
+        List<BookingDto> updatedList = bookingDtos.getContent().stream()
+                .map(dto -> new BookingDto(dto.getId(), dto.getCustomerName(), dto.getDate(), dto.getFromTime(),
+                        dto.getToTime(), dto.getLaneName(), BookingStatus.fromMappedValue(dto.getStatus()),dto.getEmail(),dto.getTelephoneNumber()))
+                .toList();
+
+        return new PageImpl<>(updatedList, pageable, bookingDtos.getTotalElements());
+    }
+
 }
