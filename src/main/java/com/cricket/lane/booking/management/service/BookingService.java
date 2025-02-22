@@ -1,5 +1,6 @@
 package com.cricket.lane.booking.management.service;
 
+import com.cricket.lane.booking.management.agent.converter.BookingConverter;
 import com.cricket.lane.booking.management.api.dto.*;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
@@ -44,6 +45,8 @@ public class BookingService {
     private static final SecureRandom random = new SecureRandom();
 
     private static final Set<Integer> generatedNumbers = new HashSet<>();
+
+    private final BookingConverter bookingConverter;
 
     @Value("${admin.email}")
     private String adminEmail;
@@ -270,4 +273,18 @@ public class BookingService {
         return new PageImpl<>(updatedList, pageable, bookingDtos.getTotalElements());
     }
 
+    public ResponseDto updateBooking(CricketLaneBookingDto cricketLaneBookingDto) {
+        CricketLaneBooking existingBooking = cricketLaneBookingRepository.findById(cricketLaneBookingDto.getId())
+                .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
+
+        cricketLaneBookingRepository.save(bookingConverter.convertForUpdate(existingBooking,cricketLaneBookingDto));
+        return new ResponseDto("Booking updated successfully");
+    }
+
+    public CricketLaneBooking getById(String id) {
+        CricketLaneBooking existingBooking = cricketLaneBookingRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
+
+        return existingBooking;
+    }
 }

@@ -62,4 +62,12 @@ public class BookingAgent {
         bookingDtoPaginatedResponseDto.setTotalPages(bookingDtos.getTotalPages());
         return bookingDtoPaginatedResponseDto;
     }
+
+    public ResponseDto updateBooking(CricketLaneBookingDto cricketLaneBookingDto) {
+        return bookingService.updateBooking(cricketLaneBookingDto);
+    }
+
+    public CricketLaneBookingDto getById(String id) {
+        return bookingConverter.convert(bookingService.getById(id));
+    }
 }

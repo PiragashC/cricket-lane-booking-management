@@ -24,4 +24,8 @@ public class LaneAgent {
     public ResponseDto createLane(LaneDto laneDto) {
         return laneService.createLane(laneConverter.convert(laneDto));
     }
+
+    public ResponseDto updateLaneStatus(String id, boolean status) {
+        return laneService.updateLaneStatus(id,status);
+    }
 }

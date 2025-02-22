@@ -25,4 +25,10 @@ public class LanesController {
     public List<LaneDto> getAllLanes(){
         return laneAgent.getAllActiveLanes();
     }
+
+    @PutMapping
+    public ResponseDto updateLaneStatus(@RequestParam(value = "id") String id,
+                                        @RequestParam(value = "status") boolean status){
+        return laneAgent.updateLaneStatus(id,status);
+    }
 }

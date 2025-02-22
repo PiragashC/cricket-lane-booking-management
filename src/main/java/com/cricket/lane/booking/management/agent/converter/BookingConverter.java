@@ -1,5 +1,6 @@
 package com.cricket.lane.booking.management.agent.converter;
 
+import com.cricket.lane.booking.management.api.dto.BookingDatesDto;
 import com.cricket.lane.booking.management.api.dto.CricketLaneBookingDto;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
@@ -7,6 +8,7 @@ import com.cricket.lane.booking.management.entity.SelectedLanes;
 import com.cricket.lane.booking.management.enums.BookingStatus;
 import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -16,6 +18,7 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -51,7 +54,6 @@ public class BookingConverter {
         cricketLaneBooking.setToTime(cricketLaneBookingDto.getToTime());
         cricketLaneBooking.setTelephoneNumber(cricketLaneBookingDto.getTelephoneNumber());
         cricketLaneBooking.setOrganization(cricketLaneBookingDto.getOrganization());
-        cricketLaneBooking.setBookingStatus(BookingStatus.PENDING);
         cricketLaneBooking.setCreatedDate(LocalDate.now());
         if (cricketLaneBookingDto.getBookingDatesDtos() != null) {
             cricketLaneBooking.setBookingDates(convertBookingDates(cricketLaneBookingDto.getBookingDatesDtos()));
@@ -61,7 +63,40 @@ public class BookingConverter {
             cricketLaneBooking.setSelectedLanes(convertSelectedLanes(cricketLaneBookingDto.getSelectedLanesDtos()));
         }
         cricketLaneBooking.setBookingType(BookingType.fromMappedValue(cricketLaneBookingDto.getBookingType()));
+
+        if (cricketLaneBookingDto.getBookingType().equalsIgnoreCase(BookingType.OFFLINE.getMappedValue())){
+            cricketLaneBooking.setBookingStatus(BookingStatus.SUCCESS);
+        }else {
+            cricketLaneBooking.setBookingStatus(BookingStatus.PENDING);
+        }
         return cricketLaneBooking;
+    }
+
+    public CricketLaneBookingDto convert(CricketLaneBooking cricketLaneBooking) {
+        CricketLaneBookingDto cricketLaneBookingDto = new CricketLaneBookingDto();
+
+        cricketLaneBookingDto.setBookingPrice(cricketLaneBooking.getBookingPrice());
+
+        cricketLaneBookingDto.setId(cricketLaneBooking.getId());
+        cricketLaneBookingDto.setBookingDetails(cricketLaneBooking.getBookingDetails());
+        cricketLaneBookingDto.setBookingTitle(cricketLaneBooking.getBookingTitle());
+        cricketLaneBookingDto.setEmail(cricketLaneBooking.getEmail());
+        cricketLaneBookingDto.setFirstName(cricketLaneBooking.getFirstName());
+        cricketLaneBookingDto.setLastName(cricketLaneBooking.getLastName());
+        cricketLaneBookingDto.setFromTime(cricketLaneBooking.getFromTime());
+        cricketLaneBookingDto.setToTime(cricketLaneBooking.getToTime());
+        cricketLaneBookingDto.setTelephoneNumber(cricketLaneBooking.getTelephoneNumber());
+        cricketLaneBookingDto.setOrganization(cricketLaneBooking.getOrganization());
+        cricketLaneBookingDto.setBookingStatus(cricketLaneBooking.getBookingStatus().getMappedValue());
+        if (cricketLaneBooking.getBookingDates() != null) {
+            cricketLaneBookingDto.setBookingDatesDtos(convertBookingDatesDto(cricketLaneBooking.getBookingDates()));
+        }
+
+        if (cricketLaneBooking.getSelectedLanes() != null) {
+            cricketLaneBookingDto.setSelectedLanesDtos(convertSelectedLanesDto(cricketLaneBooking.getSelectedLanes()));
+        }
+//        cricketLaneBookingDto.setBookingType(cricketLaneBooking.getBookingType().getMappedValue());
+        return cricketLaneBookingDto;
     }
 
 
@@ -91,6 +126,12 @@ public class BookingConverter {
                 }).collect(Collectors.toSet());
     }
 
+    public List<LocalDate> convertBookingDatesDto(Set<BookingDates> bookingDates) {
+        return bookingDates.stream()
+                .map(BookingDates::getBookingDate)
+                .toList();
+    }
+
     public Set<SelectedLanes> convertSelectedLanes(List<String> selectedLanesDtos) {
         Set<SelectedLanes> selectedLanes = new HashSet<>();
         return selectedLanesDtos.stream()
@@ -101,5 +142,37 @@ public class BookingConverter {
 
                     return selectedLane;
                 }).collect(Collectors.toSet());
+    }
+
+    public List<String> convertSelectedLanesDto(Set<SelectedLanes> selectedLanes) {
+        return selectedLanes.stream()
+                .map(SelectedLanes::getLaneId)
+                .toList();
+    }
+
+    @Transactional
+    public CricketLaneBooking convertForUpdate(CricketLaneBooking existingBooking, CricketLaneBookingDto cricketLaneBookingDto) {
+        existingBooking.setId(cricketLaneBookingDto.getId());
+        existingBooking.setBookingDetails(cricketLaneBookingDto.getBookingDetails());
+        existingBooking.setBookingTitle(cricketLaneBookingDto.getBookingTitle());
+        existingBooking.setEmail(cricketLaneBookingDto.getEmail());
+        existingBooking.setFirstName(cricketLaneBookingDto.getFirstName());
+        existingBooking.setLastName(cricketLaneBookingDto.getLastName());
+        existingBooking.setFromTime(cricketLaneBookingDto.getFromTime());
+        existingBooking.setToTime(cricketLaneBookingDto.getToTime());
+        existingBooking.setTelephoneNumber(cricketLaneBookingDto.getTelephoneNumber());
+        existingBooking.setOrganization(cricketLaneBookingDto.getOrganization());
+        existingBooking.setBookingStatus(BookingStatus.PENDING);
+        existingBooking.setCreatedDate(LocalDate.now());
+        if (cricketLaneBookingDto.getBookingDatesDtos() != null) {
+            existingBooking.setBookingDates(convertBookingDates(cricketLaneBookingDto.getBookingDatesDtos()));
+        }
+
+        if (cricketLaneBookingDto.getSelectedLanesDtos() != null) {
+            existingBooking.setSelectedLanes(convertSelectedLanes(cricketLaneBookingDto.getSelectedLanesDtos()));
+        }
+        existingBooking.setBookingType(BookingType.fromMappedValue(cricketLaneBookingDto.getBookingType()));
+        existingBooking.setBookingPrice(cricketLaneBookingDto.getBookingPrice());
+        return existingBooking;
     }
 }

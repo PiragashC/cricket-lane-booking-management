@@ -30,4 +30,5 @@ public class CricketLaneBookingDto {
     private String organization;
     private String bookingStatus;
     private String bookingType;
+    private BigDecimal bookingPrice;
 }

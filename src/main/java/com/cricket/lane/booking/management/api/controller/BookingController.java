@@ -99,4 +99,14 @@ public class BookingController {
 
         return bookingAgent.getAllBookingPagination(bookingSearchDto);
     }
+
+    @PutMapping("/update")
+    public ResponseDto updateBooking(@RequestBody CricketLaneBookingDto cricketLaneBookingDto){
+        return bookingAgent.updateBooking(cricketLaneBookingDto);
+    }
+
+    @GetMapping("/get-by-id/{id}")
+    public CricketLaneBookingDto getById(@PathVariable(value = "id") String id){
+        return bookingAgent.getById(id);
+    }
 }
