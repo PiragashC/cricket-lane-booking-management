@@ -13,45 +13,69 @@ import com.cricket.lane.booking.management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
 public class AuthenticationService {
-    private final UserRepository repository;
+    private final UserRepository userRepository;
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final RefreshTokenService refreshTokenService;
 
     public AuthResponse authenticate(AuthRequest request) {
-        User user = repository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new ServiceException("Invalid login","Bad request", HttpStatus.BAD_REQUEST));
-        String jwtToken = jwtService.generateToken(user);
+        try {
+            Authentication authentication = authenticateUser(request.getEmail(), request.getPassword());
+
+            User user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new ServiceException("User not found", "Bad request", HttpStatus.BAD_REQUEST));
+
+            return buildAuthResponse(user, authentication);
+
+        } catch (BadCredentialsException e) {
+            throw new ServiceException("Invalid email or password", "Unauthorized", HttpStatus.UNAUTHORIZED);
+        }
+    }
+
+    public AuthResponse refreshToken(RefreshTokenRequest request) {
+        RefreshToken refreshToken = refreshTokenService.findByToken(request.getRefreshToken())
+                .map(refreshTokenService::verifyExpiration)
+                .orElseThrow(() -> new ServiceException("Refresh token not found", "Unauthorized", HttpStatus.UNAUTHORIZED));
+
+        User user = refreshToken.getUser();
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                user.getEmail(), null, user.getAuthorities());
+
+        String newAccessToken = jwtService.generateToken(user, authentication);
+        return buildAuthResponse(user, newAccessToken);
+    }
+
+    private AuthResponse buildAuthResponse(User user, Authentication authentication) {
+        String jwtToken = jwtService.generateToken(user, authentication);
+        return buildAuthResponse(user, jwtToken);
+    }
+
+    private AuthResponse buildAuthResponse(User user, String accessToken) {
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user.getId());
 
         UserDto userDto = new UserDto();
         userDto.setUserName(user.getFirstName() + " " + user.getLastName());
         userDto.setEmail(user.getEmail());
         userDto.setId(user.getId());
+
         return AuthResponse.builder()
-                .accessToken(jwtToken)
+                .accessToken(accessToken)
                 .refreshToken(refreshToken.getToken())
                 .userDto(userDto)
                 .build();
     }
 
-    public AuthResponse refreshToken(RefreshTokenRequest request) {
-        return refreshTokenService.findByToken(request.getRefreshToken())
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String accessToken = jwtService.generateToken(user);
-                    return AuthResponse.builder()
-                            .accessToken(accessToken)
-                            .refreshToken(refreshTokenService.createRefreshToken(user.getId()).getToken())
-                            .build();
-                })
-                .orElseThrow(() -> new RuntimeException("Refresh token not found in database!"));
+    private Authentication authenticateUser(String email, String password) {
+        return authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(email, password));
     }
 }
