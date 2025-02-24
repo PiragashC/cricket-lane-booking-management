@@ -109,4 +109,26 @@ public class BookingController {
     public CricketLaneBookingDto getById(@PathVariable(value = "id") String id){
         return bookingAgent.getById(id);
     }
+
+    @PutMapping("/update-lane-status")
+    public ResponseDto updateLaneStatus(@RequestParam(value = "id") String id,
+                                        @RequestParam(value = "status") boolean status){
+        return laneAgent.updateLaneStatus(id,status);
+    }
+
+    @GetMapping("/get-lane-by-id/{id}")
+    public LaneDto getLaneById(@PathVariable(value = "id") String id){
+        return laneAgent.getById(id);
+    }
+
+    @PutMapping("/update-lane")
+    public ResponseDto updateLane(@RequestBody LaneDto laneDto){
+        return laneAgent.updateLane(laneDto);
+    }
+
+    @GetMapping("/get-all-lanes")
+    public PaginatedResponseDto<LaneDto> getAllLanes(@RequestParam(value = "page") int page,
+                                                     @RequestParam(value = "size") int size){
+        return laneAgent.getAllLanes(page,size);
+    }
 }

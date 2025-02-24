@@ -14,4 +14,11 @@ public class LaneConverter {
                 .isActive(Boolean.TRUE)
                 .build();
     }
+
+    public Lanes convert(Lanes existingLane, LaneDto laneDto){
+        existingLane.setId(laneDto.getLaneId());
+        existingLane.setLaneName(laneDto.getLaneName());
+
+        return existingLane;
+    }
 }

@@ -2,6 +2,8 @@ package com.cricket.lane.booking.management.repository;
 
 import com.cricket.lane.booking.management.api.dto.LaneDto;
 import com.cricket.lane.booking.management.entity.Lanes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -18,4 +20,13 @@ public interface LaneRepository extends JpaRepository<Lanes,String> {
             "FROM Lanes l " +
             "WHERE l.isActive = true")
     List<LaneDto> getAllActiveLanes();
+
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName) " +
+            "FROM Lanes l " +
+            "WHERE l.id = :id")
+    LaneDto getLaneById(String id);
+
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName,l.isActive) " +
+            "FROM Lanes l ")
+    Page<LaneDto> geAllLanes(Pageable pageable);
 }
