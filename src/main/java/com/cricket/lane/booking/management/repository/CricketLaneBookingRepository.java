@@ -86,7 +86,7 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
             "AND (:laneId IS NULL OR s.laneId = :laneId) " +
             "AND (:status IS NULL OR c.bookingStatus = :status) " +
             "AND (:type IS NULL OR c.bookingType = :type) " +
-            "ORDER BY b.bookingDate DESC")
+            "ORDER BY c.createdDate DESC")
     Page<BookingDto> getAllBookingPagination(Pageable pageable, LocalDate fromDate, LocalDate toDate, String laneId,
                                              BookingStatus status, BookingType type);
 
