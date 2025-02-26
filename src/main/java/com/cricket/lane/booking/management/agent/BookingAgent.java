@@ -2,6 +2,8 @@ package com.cricket.lane.booking.management.agent;
 
 import com.cricket.lane.booking.management.agent.converter.BookingConverter;
 import com.cricket.lane.booking.management.api.dto.*;
+import com.cricket.lane.booking.management.enums.BookingStatus;
+import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.service.BookingService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -69,5 +71,17 @@ public class BookingAgent {
 
     public CricketLaneBookingDto getById(String id) {
         return bookingConverter.convert(bookingService.getById(id));
+    }
+
+    public DropDownDto getBookingType() {
+        DropDownDto dto = new DropDownDto();
+        dto.setBookingType(BookingType.getAll());
+        return dto;
+    }
+
+    public DropDownDto getBookingStatus() {
+        DropDownDto dto = new DropDownDto();
+        dto.setBookingStatus(BookingStatus.getAll());
+        return dto;
     }
 }

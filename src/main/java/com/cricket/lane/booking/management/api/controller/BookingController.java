@@ -64,7 +64,7 @@ public class BookingController {
         return laneAgent.createLane(laneDto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     public ResponseDto deleteBooking(@RequestParam(value = "bookingId") String bookingId){
         return bookingAgent.deleteBooking(bookingId);
     }
@@ -130,5 +130,15 @@ public class BookingController {
     public PaginatedResponseDto<LaneDto> getAllLanes(@RequestParam(value = "page") int page,
                                                      @RequestParam(value = "size") int size){
         return laneAgent.getAllLanes(page,size);
+    }
+
+    @GetMapping("/booking-type")
+    public DropDownDto getBookingType() {
+        return bookingAgent.getBookingType();
+    }
+
+    @GetMapping("/booking-status")
+    public DropDownDto getBookingStatus() {
+        return bookingAgent.getBookingStatus();
     }
 }
