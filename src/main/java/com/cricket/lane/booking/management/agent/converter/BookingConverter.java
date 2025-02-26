@@ -2,12 +2,14 @@ package com.cricket.lane.booking.management.agent.converter;
 
 import com.cricket.lane.booking.management.api.dto.BookingDatesDto;
 import com.cricket.lane.booking.management.api.dto.CricketLaneBookingDto;
+import com.cricket.lane.booking.management.api.dto.LaneDto;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
 import com.cricket.lane.booking.management.entity.SelectedLanes;
 import com.cricket.lane.booking.management.enums.BookingStatus;
 import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
+import com.cricket.lane.booking.management.repository.LaneRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,18 +32,25 @@ import static com.cricket.lane.booking.management.constants.ApplicationConstants
 @RequiredArgsConstructor
 public class BookingConverter {
 
+    private final LaneRepository laneRepository;
+
     public CricketLaneBooking convert(CricketLaneBookingDto cricketLaneBookingDto) {
         CricketLaneBooking cricketLaneBooking = new CricketLaneBooking();
-
-        Integer noOfLanes = cricketLaneBookingDto.getSelectedLanesDtos().size();
 
         Integer totalHours = cricketLaneBookingDto.getBookingDatesDtos().stream()
                 .mapToInt(date -> calculateTotalHours(date, cricketLaneBookingDto.getFromTime(), cricketLaneBookingDto.getToTime()))
                 .sum();
 
-        Integer payment = totalHours * noOfLanes;
-        BigDecimal totalPayment = BigDecimal.valueOf(payment).multiply(BigDecimal.valueOf(45.0));
-        BigDecimal totalPriceWithTax = totalPayment.multiply(BigDecimal.valueOf(1.13));
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        for (String laneId : cricketLaneBookingDto.getSelectedLanesDtos()) {
+            BigDecimal lanePrice = laneRepository.findLanePrice(laneId);
+            BigDecimal laneTotal = lanePrice.multiply(BigDecimal.valueOf(totalHours));
+            totalPrice = totalPrice.add(laneTotal);
+        }
+
+        BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
+
         cricketLaneBooking.setBookingPrice(totalPriceWithTax);
 
         cricketLaneBooking.setId(cricketLaneBookingDto.getId());
@@ -93,7 +102,7 @@ public class BookingConverter {
         }
 
         if (cricketLaneBooking.getSelectedLanes() != null) {
-            cricketLaneBookingDto.setSelectedLanesDtos(convertSelectedLanesDto(cricketLaneBooking.getSelectedLanes()));
+            cricketLaneBookingDto.setLaneDtos(convertSelectedLanesDto(cricketLaneBooking.getSelectedLanes()));
         }
 //        cricketLaneBookingDto.setBookingType(cricketLaneBooking.getBookingType().getMappedValue());
         return cricketLaneBookingDto;
@@ -144,9 +153,17 @@ public class BookingConverter {
                 }).collect(Collectors.toSet());
     }
 
-    public List<String> convertSelectedLanesDto(Set<SelectedLanes> selectedLanes) {
+    public List<LaneDto> convertSelectedLanesDto(Set<SelectedLanes> selectedLanes) {
+        List<LaneDto> laneDtos = new ArrayList<>();
         return selectedLanes.stream()
-                .map(SelectedLanes::getLaneId)
+                .map(selectedLane -> {
+                    LaneDto laneDto = new LaneDto();
+                    String laneName = laneRepository.findLaneNameById(selectedLane.getLaneId());
+                    laneDto.setLaneId(selectedLane.getLaneId());
+                    laneDto.setLaneName(laneName);
+                    laneDtos.add(laneDto);
+                    return laneDto;
+                })
                 .toList();
     }
 

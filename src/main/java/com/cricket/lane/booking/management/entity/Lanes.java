@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.math.BigDecimal;
+
 @Entity
 @Builder
 @AllArgsConstructor
@@ -21,4 +23,5 @@ public class Lanes {
     private String id;
     private String laneName;
     private Boolean isActive;
+    private BigDecimal lanePrice;
 }

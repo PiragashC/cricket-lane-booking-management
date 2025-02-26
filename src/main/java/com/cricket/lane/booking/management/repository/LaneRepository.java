@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface LaneRepository extends JpaRepository<Lanes,String> {
@@ -29,4 +30,9 @@ public interface LaneRepository extends JpaRepository<Lanes,String> {
     @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName,l.isActive) " +
             "FROM Lanes l ")
     Page<LaneDto> geAllLanes(Pageable pageable);
+
+    @Query("SELECT l.lanePrice " +
+            "FROM Lanes l " +
+            "WHERE l.id = :laneId")
+    BigDecimal findLanePrice(String laneId);
 }

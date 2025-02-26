@@ -26,11 +26,11 @@ public class BookingController {
     }
 
     @GetMapping
-    public BookingPriceDto getBookingPrice(@RequestParam(value = "noOfLanes", required = false) Integer noOfLanes,
+    public BookingPriceDto getBookingPrice(@RequestParam(value = "laneIds", required = false) List<String> laneIds,
                                            @RequestParam(value = "fromTime", required = false) LocalTime fromTime,
                                            @RequestParam(value = "toTime", required = false) LocalTime toTime,
                                            @RequestParam(value = "noOfDates",required = false) Integer noOfDates) {
-        return bookingAgent.getBookingPrice(noOfLanes, fromTime, toTime,noOfDates);
+        return bookingAgent.getBookingPrice(laneIds, fromTime, toTime,noOfDates);
     }
 
     @GetMapping("/check-availability")
@@ -140,5 +140,10 @@ public class BookingController {
     @GetMapping("/booking-status")
     public DropDownDto getBookingStatus() {
         return bookingAgent.getBookingStatus();
+    }
+
+    @GetMapping("/promo-code")
+    public boolean checkPromoCode(@RequestParam(value = "promoCode") String promoCode){
+        return bookingAgent.checkPromoCode(promoCode);
     }
 }

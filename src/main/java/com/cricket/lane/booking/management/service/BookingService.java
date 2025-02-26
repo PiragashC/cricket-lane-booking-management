@@ -4,6 +4,7 @@ import com.cricket.lane.booking.management.agent.converter.BookingConverter;
 import com.cricket.lane.booking.management.api.dto.*;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
+import com.cricket.lane.booking.management.entity.Lanes;
 import com.cricket.lane.booking.management.enums.BookingStatus;
 import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
@@ -51,6 +52,10 @@ public class BookingService {
     @Value("${admin.email}")
     private String adminEmail;
 
+    @Value("${promo.code}")
+    private String koverDrivePromo;
+
+
     public ResponseDto bookingCricketLane(CricketLaneBooking cricketLaneBooking) {
         cricketLaneBooking.getBookingDates().stream()
                 .map(bookingDate -> {
@@ -58,7 +63,7 @@ public class BookingService {
 
                     cricketLaneBooking.getSelectedLanes().stream()
                             .map(selectedLane -> {
-                                Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate(),selectedLane.getLaneId());
+                                Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate(), selectedLane.getLaneId());
                                 log.info("checkLane---{}", checkLaneFree);
                                 if (checkLaneFree.equals(Boolean.TRUE)) {
                                     throw new ServiceException("Lane already booked on " + bookingDate.getBookingDate() +
@@ -76,22 +81,24 @@ public class BookingService {
         return responseDto;
     }
 
-    public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime, Integer noOfDates) {
+    public BookingPriceDto getBookingPrice(List<String> laneIds, LocalTime fromTime, LocalTime toTime, Integer noOfDates) {
         BookingPriceDto bookingPriceDto = new BookingPriceDto();
-        double ratePerLane = 45.0;
-
         long durationMinutes = Duration.between(fromTime, toTime).toMinutes();
         long durationHours = (long) Math.ceil(durationMinutes / 60.0);
 
-        BigDecimal totalPrice = BigDecimal.valueOf(noOfLanes * durationHours * ratePerLane * noOfDates);
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        for (String laneId : laneIds) {
+            BigDecimal lanePrice = laneRepository.findLanePrice(laneId);
+            BigDecimal laneTotal = lanePrice.multiply(BigDecimal.valueOf(durationHours * noOfDates));
+            totalPrice = totalPrice.add(laneTotal);
+        }
 
         BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
-
         bookingPriceDto.setBookingPrice(totalPriceWithTax);
 
         return bookingPriceDto;
     }
-
 
     public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> dates) {
         return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates);
@@ -267,7 +274,7 @@ public class BookingService {
 
         List<BookingDto> updatedList = bookingDtos.getContent().stream()
                 .map(dto -> new BookingDto(dto.getId(), dto.getCustomerName(), dto.getDate(), dto.getFromTime(),
-                        dto.getToTime(), dto.getLaneName(), BookingStatus.fromMappedValue(dto.getStatus()),dto.getEmail(),dto.getTelephoneNumber()))
+                        dto.getToTime(), dto.getLaneName(), BookingStatus.fromMappedValue(dto.getStatus()), dto.getEmail(), dto.getTelephoneNumber()))
                 .toList();
 
         return new PageImpl<>(updatedList, pageable, bookingDtos.getTotalElements());
@@ -277,7 +284,7 @@ public class BookingService {
         CricketLaneBooking existingBooking = cricketLaneBookingRepository.findById(cricketLaneBookingDto.getId())
                 .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
 
-        cricketLaneBookingRepository.save(bookingConverter.convertForUpdate(existingBooking,cricketLaneBookingDto));
+        cricketLaneBookingRepository.save(bookingConverter.convertForUpdate(existingBooking, cricketLaneBookingDto));
         return new ResponseDto("Booking updated successfully");
     }
 
@@ -286,5 +293,13 @@ public class BookingService {
                 .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
 
         return existingBooking;
+    }
+
+    public boolean checkPromoCode(String promoCode) {
+        if (koverDrivePromo.equals(promoCode)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
