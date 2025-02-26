@@ -9,9 +9,9 @@ import java.util.List;
 
 
 public enum BookingType {
+    ALL("All"),
     ONLINE("Online"),
-    OFFLINE("Offline"),
-    ALL("All");
+    OFFLINE("Offline");
 
     private final String mappedValue;
 
