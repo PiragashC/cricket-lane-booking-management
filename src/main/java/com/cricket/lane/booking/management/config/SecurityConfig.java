@@ -39,6 +39,7 @@ public class SecurityConfig {
                                 "/api/v1/booking/check-availability",
                                 "/api/v1/booking/get-all-for-calender",
                                 "/api/v1/booking/promo-code",
+                                "/api/v1/booking/lanes",
                                 "/api/v1/lane/**",
                                 "/api/v1/payment/**",
                                 "/api/v1/emails/**"
