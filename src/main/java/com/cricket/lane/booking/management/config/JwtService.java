@@ -16,10 +16,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.logging.Logger;
 
 @Service
 public class JwtService {
     private static final String SECRET_KEY = "404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970";
+    private static final Logger logger = Logger.getLogger(JwtService.class.getName());
 
     public String extractUsername(String token) {
         return extractClaim(token, Claims::getSubject);
@@ -35,19 +37,21 @@ public class JwtService {
         return generateToken(new HashMap<>(), user);
     }
 
-    public String generateToken(
-            Map<String, Object> extraClaims,
-            User user
-    ) {
+    public String generateToken(Map<String, Object> extraClaims, User user) {
         extraClaims.put("email", user.getEmail());
         extraClaims.put("user_id", user.getId());
 
-        return Jwts
-                .builder()
+        long expirationTimeMillis = 1000L * 60 * 24; // Explicit cast to long
+        Date issuedAt = new Date(System.currentTimeMillis());
+        Date expiration = new Date(System.currentTimeMillis() + expirationTimeMillis);
+
+        logger.info("Generating token for user: " + user.getEmail());
+
+        return Jwts.builder()
                 .setClaims(extraClaims)
                 .setSubject(user.getEmail())
-                .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 24))
+                .setIssuedAt(issuedAt)
+                .setExpiration(expiration)
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -66,8 +70,7 @@ public class JwtService {
     }
 
     private Claims extractAllClaims(String token) {
-        return Jwts
-                .parserBuilder()
+        return Jwts.parserBuilder()
                 .setSigningKey(getSignInKey())
                 .build()
                 .parseClaimsJws(token)
