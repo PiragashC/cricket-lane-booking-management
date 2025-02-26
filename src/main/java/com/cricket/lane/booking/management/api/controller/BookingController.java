@@ -84,7 +84,7 @@ public class BookingController {
                                                                     @RequestParam(value = "toDate") LocalDate toDate,
                                                                     @RequestParam(value = "laneId",required = false) String laneId,
                                                                     @RequestParam(value = "status",required = false) String status,
-                                                                    @RequestParam(value = "type",required = false) String type,
+                                                                    @RequestParam(value = "type") String type,
                                                                     @RequestParam(value = "page") int page,
                                                                     @RequestParam(value = "size") int size){
         BookingSearchDto bookingSearchDto = BookingSearchDto.builder()

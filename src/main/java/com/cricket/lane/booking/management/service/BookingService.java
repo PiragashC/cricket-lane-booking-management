@@ -260,16 +260,25 @@ public class BookingService {
 
     public Page<BookingDto> getAllBookingPagination(BookingSearchDto bookingSearchDto) {
         Pageable pageable = PageRequest.of(bookingSearchDto.getPage() - 1, bookingSearchDto.getSize());
+        Page<BookingDto> bookingDtos = null;
+        if (bookingSearchDto.getType().equalsIgnoreCase("All")){
+            bookingDtos = cricketLaneBookingRepository.getAllBookingPaginationAllType(pageable,
+                    bookingSearchDto.getFromDate(),
+                    bookingSearchDto.getToDate(),
+                    bookingSearchDto.getLaneId(),
+                    bookingSearchDto.getStatus() != null && !bookingSearchDto.getStatus().isEmpty() ? BookingStatus.fromMappedValue(bookingSearchDto.getStatus()) : null);
 
-        Page<BookingDto> bookingDtos = cricketLaneBookingRepository.getAllBookingPagination(
-                pageable,
-                bookingSearchDto.getFromDate(),
-                bookingSearchDto.getToDate(),
-                bookingSearchDto.getLaneId(),
-                bookingSearchDto.getStatus() != null && !bookingSearchDto.getStatus().isEmpty() ? BookingStatus.fromMappedValue(bookingSearchDto.getStatus()) : null,
-                bookingSearchDto.getType() != null && !bookingSearchDto.getType().isEmpty() ? BookingType.fromMappedValue(bookingSearchDto.getType()) : null
-        );
 
+        }else {
+            bookingDtos = cricketLaneBookingRepository.getAllBookingPagination(
+                    pageable,
+                    bookingSearchDto.getFromDate(),
+                    bookingSearchDto.getToDate(),
+                    bookingSearchDto.getLaneId(),
+                    bookingSearchDto.getStatus() != null && !bookingSearchDto.getStatus().isEmpty() ? BookingStatus.fromMappedValue(bookingSearchDto.getStatus()) : null,
+                    bookingSearchDto.getType() != null && !bookingSearchDto.getType().isEmpty() ? BookingType.fromMappedValue(bookingSearchDto.getType()) : null
+            );
+        }
         BookingDto.resetCounter();
 
         List<BookingDto> updatedList = bookingDtos.getContent().stream()

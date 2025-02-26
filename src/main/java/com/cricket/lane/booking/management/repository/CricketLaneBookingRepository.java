@@ -90,4 +90,16 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
     Page<BookingDto> getAllBookingPagination(Pageable pageable, LocalDate fromDate, LocalDate toDate, String laneId,
                                              BookingStatus status, BookingType type);
 
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingDto(c.id,CONCAT(c.firstName,' ',c.lastName) AS customerName,b.bookingDate,c.fromTime, c.toTime,l.laneName,c.bookingStatus,c.email,c.telephoneNumber) " +
+            "FROM CricketLaneBooking c " +
+            "LEFT JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
+            "LEFT JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
+            "LEFT JOIN Lanes l ON s.laneId = l.id " +
+            "WHERE b.bookingDate BETWEEN :fromDate AND :toDate " +
+            "AND (:laneId IS NULL OR s.laneId = :laneId) " +
+            "AND (:status IS NULL OR c.bookingStatus = :status) " +
+            "ORDER BY c.createdDate DESC")
+    Page<BookingDto> getAllBookingPaginationAllType(Pageable pageable, LocalDate fromDate, LocalDate toDate, String laneId,
+                                             BookingStatus status);
+
 }
