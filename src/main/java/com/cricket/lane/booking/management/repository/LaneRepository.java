@@ -22,12 +22,12 @@ public interface LaneRepository extends JpaRepository<Lanes,String> {
             "WHERE l.isActive = true")
     List<LaneDto> getAllActiveLanes();
 
-    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName) " +
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName,l.lanePrice) " +
             "FROM Lanes l " +
             "WHERE l.id = :id")
     LaneDto getLaneById(String id);
 
-    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName,l.isActive) " +
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName,l.isActive,l.lanePrice) " +
             "FROM Lanes l ")
     Page<LaneDto> geAllLanes(Pageable pageable);
 

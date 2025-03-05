@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Data
@@ -16,17 +17,20 @@ public class LaneDto {
     private String laneName;
     private Boolean isActive;
     private String laneNumber;
+    private BigDecimal lanePrice;
 
-    public LaneDto(String id, String laneName) {
+    public LaneDto(String id, String laneName,BigDecimal lanePrice) {
         this.laneId = id;
         this.laneName = laneName;
+        this.lanePrice = lanePrice;
     }
 
-    public LaneDto(String laneId, String laneName, Boolean isActive) {
+    public LaneDto(String laneId, String laneName, Boolean isActive,BigDecimal lanePrice) {
         this.laneId = laneId;
         this.laneName = laneName;
         this.isActive = isActive;
         this.laneNumber = generateLaneNumber();
+        this.lanePrice = lanePrice;
     }
 
     private String generateLaneNumber() {

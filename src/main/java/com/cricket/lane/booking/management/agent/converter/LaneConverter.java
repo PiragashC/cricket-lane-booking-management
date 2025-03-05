@@ -12,13 +12,14 @@ public class LaneConverter {
                 .id(laneDto.getLaneId())
                 .laneName(laneDto.getLaneName())
                 .isActive(Boolean.TRUE)
+                .lanePrice(laneDto.getLanePrice())
                 .build();
     }
 
     public Lanes convert(Lanes existingLane, LaneDto laneDto){
         existingLane.setId(laneDto.getLaneId());
         existingLane.setLaneName(laneDto.getLaneName());
-
+        existingLane.setLanePrice(laneDto.getLanePrice());
         return existingLane;
     }
 }
