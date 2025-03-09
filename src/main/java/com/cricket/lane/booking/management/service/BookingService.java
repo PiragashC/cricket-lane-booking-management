@@ -98,7 +98,7 @@ public class BookingService {
 
         PromoCode koverDrivePromoCode = promoCodeRepository.getPromoCodeToCalculatePrice();
 
-        if (koverDrivePromoCode.getPromoCode().equals(promoCode)) {
+        if (koverDrivePromoCode != null && koverDrivePromoCode.getPromoCode().equals(promoCode)) {
             BigDecimal discountPercentage = koverDrivePromoCode.getDiscount();
             BigDecimal discountAmount = totalPriceWithTax.multiply(discountPercentage.divide(BigDecimal.valueOf(100)));
             totalPriceWithTax = totalPriceWithTax.subtract(discountAmount);
@@ -316,7 +316,7 @@ public class BookingService {
 
     public boolean checkPromoCode(String promoCode) {
         String koverDrivePromo = promoCodeRepository.getPromoCode();
-        if (koverDrivePromo.equals(promoCode)) {
+        if (koverDrivePromo != null && koverDrivePromo.equals(promoCode)) {
             return true;
         } else {
             return false;
