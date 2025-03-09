@@ -17,7 +17,7 @@ public interface LaneRepository extends JpaRepository<Lanes,String> {
             "WHERE l.id = :laneId")
     String findLaneNameById(String laneId);
 
-    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName) " +
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id,l.laneName,l.lanePrice) " +
             "FROM Lanes l " +
             "WHERE l.isActive = true")
     List<LaneDto> getAllActiveLanes();
