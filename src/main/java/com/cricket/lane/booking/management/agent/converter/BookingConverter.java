@@ -57,7 +57,7 @@ public class BookingConverter {
 
         PromoCode koverDrivePromoCode = promoCodeRepository.getPromoCodeToCalculatePrice();
 
-        if (koverDrivePromoCode.getPromoCode().equals(cricketLaneBookingDto.getPromoCode())) {
+        if (koverDrivePromoCode != null && koverDrivePromoCode.getPromoCode().equals(cricketLaneBookingDto.getPromoCode())) {
             BigDecimal discountPercentage = koverDrivePromoCode.getDiscount();
             BigDecimal discountAmount = totalPriceWithTax.multiply(discountPercentage.divide(BigDecimal.valueOf(100)));
             totalPriceWithTax = totalPriceWithTax.subtract(discountAmount);
