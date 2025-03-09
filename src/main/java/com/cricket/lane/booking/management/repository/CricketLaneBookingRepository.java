@@ -32,7 +32,7 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
             "    AND cb.fromTime <= :toTime " +
             "    AND cb.toTime >= :fromTime " +
             "    AND cb.bookingStatus IN ('SUCCESS', 'PENDING') " +
-            ")")
+            ") AND l.isActive = true")
     List<LaneDto> findAvailableLanes(
             @Param("fromTime") LocalTime fromTime,
             @Param("toTime") LocalTime toTime,
