@@ -323,9 +323,14 @@ public class BookingService {
         }
     }
 
-    public String getPromoCode() {
-        String promoCode = promoCodeRepository.getPromoCode();
-        return promoCode;
+    public PromoCodeDto getPromoCode() {
+        PromoCode promoCode = promoCodeRepository.getPromoCodeToCalculatePrice();
+        PromoCodeDto promoCodeDto = new PromoCodeDto();
+        promoCodeDto.setId(promoCode.getId());
+        promoCodeDto.setPromoCode(promoCode.getPromoCode());
+        promoCodeDto.setDiscount(promoCode.getDiscount());
+        promoCodeDto.setIsActive(promoCode.getIsActive());
+        return promoCodeDto;
     }
 
     public ResponseDto updatePromoCode(PromoCodeDto promoCodeDto) {

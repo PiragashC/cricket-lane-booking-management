@@ -9,4 +9,5 @@ public class PromoCodeDto {
     private String id;
     private String promoCode;
     private BigDecimal discount;
+    private Boolean isActive;
 }

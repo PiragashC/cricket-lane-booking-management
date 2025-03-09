@@ -89,7 +89,7 @@ public class BookingAgent {
         return bookingService.checkPromoCode(promoCode);
     }
 
-    public String getPromoCode() {
+    public PromoCodeDto getPromoCode() {
         return bookingService.getPromoCode();
     }
 

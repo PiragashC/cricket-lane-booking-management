@@ -149,7 +149,7 @@ public class BookingController {
     }
 
     @GetMapping("/get-promo-code")
-    public String getPromoCode(){
+    public PromoCodeDto getPromoCode(){
         return bookingAgent.getPromoCode();
     }
 
