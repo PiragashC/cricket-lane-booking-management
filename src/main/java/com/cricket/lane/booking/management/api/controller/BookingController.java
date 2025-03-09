@@ -29,8 +29,9 @@ public class BookingController {
     public BookingPriceDto getBookingPrice(@RequestParam(value = "laneIds", required = false) List<String> laneIds,
                                            @RequestParam(value = "fromTime", required = false) LocalTime fromTime,
                                            @RequestParam(value = "toTime", required = false) LocalTime toTime,
-                                           @RequestParam(value = "noOfDates",required = false) Integer noOfDates) {
-        return bookingAgent.getBookingPrice(laneIds, fromTime, toTime,noOfDates);
+                                           @RequestParam(value = "noOfDates",required = false) Integer noOfDates,
+                                           @RequestParam(value = "promoCode",required = false) String promoCode) {
+        return bookingAgent.getBookingPrice(laneIds, fromTime, toTime,noOfDates,promoCode);
     }
 
     @GetMapping("/check-availability")
@@ -145,5 +146,20 @@ public class BookingController {
     @GetMapping("/promo-code")
     public boolean checkPromoCode(@RequestParam(value = "promoCode") String promoCode){
         return bookingAgent.checkPromoCode(promoCode);
+    }
+
+    @GetMapping("/get-promo-code")
+    public String getPromoCode(){
+        return bookingAgent.getPromoCode();
+    }
+
+    @PutMapping("/update-promo-code")
+    public ResponseDto updatePromoCode(@RequestBody PromoCodeDto promoCodeDto){
+        return bookingAgent.updatePromoCode(promoCodeDto);
+    }
+
+    @PutMapping("/update-promo-code-status")
+    public ResponseDto updatePromoCodeStatus(@RequestParam(value = "id") String id, @RequestParam(value = "status") Boolean status){
+        return bookingAgent.updatePromoCodeStatus(id,status);
     }
 }

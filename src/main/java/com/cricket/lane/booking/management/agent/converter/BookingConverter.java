@@ -5,13 +5,16 @@ import com.cricket.lane.booking.management.api.dto.CricketLaneBookingDto;
 import com.cricket.lane.booking.management.api.dto.LaneDto;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
+import com.cricket.lane.booking.management.entity.PromoCode;
 import com.cricket.lane.booking.management.entity.SelectedLanes;
 import com.cricket.lane.booking.management.enums.BookingStatus;
 import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.LaneRepository;
+import com.cricket.lane.booking.management.repository.PromoCodeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -33,6 +36,7 @@ import static com.cricket.lane.booking.management.constants.ApplicationConstants
 public class BookingConverter {
 
     private final LaneRepository laneRepository;
+    private final PromoCodeRepository promoCodeRepository;
 
     public CricketLaneBooking convert(CricketLaneBookingDto cricketLaneBookingDto) {
         CricketLaneBooking cricketLaneBooking = new CricketLaneBooking();
@@ -51,6 +55,14 @@ public class BookingConverter {
 
         BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
 
+        PromoCode koverDrivePromoCode = promoCodeRepository.getPromoCodeToCalculatePrice();
+
+        if (koverDrivePromoCode.getPromoCode().equals(cricketLaneBookingDto.getPromoCode())) {
+            BigDecimal discountPercentage = koverDrivePromoCode.getDiscount();
+            BigDecimal discountAmount = totalPriceWithTax.multiply(discountPercentage.divide(BigDecimal.valueOf(100)));
+            totalPriceWithTax = totalPriceWithTax.subtract(discountAmount);
+        }
+
         cricketLaneBooking.setBookingPrice(totalPriceWithTax);
 
         cricketLaneBooking.setId(cricketLaneBookingDto.getId());
@@ -64,6 +76,7 @@ public class BookingConverter {
         cricketLaneBooking.setTelephoneNumber(cricketLaneBookingDto.getTelephoneNumber());
         cricketLaneBooking.setOrganization(cricketLaneBookingDto.getOrganization());
         cricketLaneBooking.setCreatedDate(LocalDate.now());
+
         if (cricketLaneBookingDto.getBookingDatesDtos() != null) {
             cricketLaneBooking.setBookingDates(convertBookingDates(cricketLaneBookingDto.getBookingDatesDtos()));
         }
@@ -71,13 +84,15 @@ public class BookingConverter {
         if (cricketLaneBookingDto.getSelectedLanesDtos() != null) {
             cricketLaneBooking.setSelectedLanes(convertSelectedLanes(cricketLaneBookingDto.getSelectedLanesDtos()));
         }
+
         cricketLaneBooking.setBookingType(BookingType.fromMappedValue(cricketLaneBookingDto.getBookingType()));
 
-        if (cricketLaneBookingDto.getBookingType().equalsIgnoreCase(BookingType.OFFLINE.getMappedValue())){
+        if (cricketLaneBookingDto.getBookingType().equalsIgnoreCase(BookingType.OFFLINE.getMappedValue())) {
             cricketLaneBooking.setBookingStatus(BookingStatus.SUCCESS);
-        }else {
+        } else {
             cricketLaneBooking.setBookingStatus(BookingStatus.PENDING);
         }
+
         return cricketLaneBooking;
     }
 

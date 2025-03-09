@@ -34,4 +34,5 @@ public class CricketLaneBookingDto {
     private String bookingType;
     private BigDecimal bookingPrice;
     private List<LaneDto> laneDtos;
+    private String promoCode;
 }

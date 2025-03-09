@@ -5,11 +5,13 @@ import com.cricket.lane.booking.management.api.dto.*;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
 import com.cricket.lane.booking.management.entity.Lanes;
+import com.cricket.lane.booking.management.entity.PromoCode;
 import com.cricket.lane.booking.management.enums.BookingStatus;
 import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.CricketLaneBookingRepository;
 import com.cricket.lane.booking.management.repository.LaneRepository;
+import com.cricket.lane.booking.management.repository.PromoCodeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -52,14 +54,12 @@ public class BookingService {
     @Value("${admin.email}")
     private String adminEmail;
 
-    @Value("${promo.code}")
-    private String koverDrivePromo;
+    private final PromoCodeRepository promoCodeRepository;
 
 
     public ResponseDto bookingCricketLane(CricketLaneBooking cricketLaneBooking) {
         cricketLaneBooking.getBookingDates().stream()
                 .map(bookingDate -> {
-
 
                     cricketLaneBooking.getSelectedLanes().stream()
                             .map(selectedLane -> {
@@ -81,7 +81,7 @@ public class BookingService {
         return responseDto;
     }
 
-    public BookingPriceDto getBookingPrice(List<String> laneIds, LocalTime fromTime, LocalTime toTime, Integer noOfDates) {
+    public BookingPriceDto getBookingPrice(List<String> laneIds, LocalTime fromTime, LocalTime toTime, Integer noOfDates, String promoCode) {
         BookingPriceDto bookingPriceDto = new BookingPriceDto();
         long durationMinutes = Duration.between(fromTime, toTime).toMinutes();
         long durationHours = (long) Math.ceil(durationMinutes / 60.0);
@@ -95,10 +95,20 @@ public class BookingService {
         }
 
         BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
-        bookingPriceDto.setBookingPrice(totalPriceWithTax);
 
+        PromoCode koverDrivePromoCode = promoCodeRepository.getPromoCodeToCalculatePrice();
+
+        if (koverDrivePromoCode.getPromoCode().equals(promoCode)) {
+            BigDecimal discountPercentage = koverDrivePromoCode.getDiscount();
+            BigDecimal discountAmount = totalPriceWithTax.multiply(discountPercentage.divide(BigDecimal.valueOf(100)));
+            totalPriceWithTax = totalPriceWithTax.subtract(discountAmount);
+        }
+
+        bookingPriceDto.setBookingPrice(totalPriceWithTax);
         return bookingPriceDto;
     }
+
+
 
     public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> dates) {
         return cricketLaneBookingRepository.findAvailableLanes(fromTime, toTime, dates);
@@ -305,10 +315,34 @@ public class BookingService {
     }
 
     public boolean checkPromoCode(String promoCode) {
+        String koverDrivePromo = promoCodeRepository.getPromoCode();
         if (koverDrivePromo.equals(promoCode)) {
             return true;
         } else {
             return false;
         }
+    }
+
+    public String getPromoCode() {
+        String promoCode = promoCodeRepository.getPromoCode();
+        return promoCode;
+    }
+
+    public ResponseDto updatePromoCode(PromoCodeDto promoCodeDto) {
+        PromoCode promoCode = promoCodeRepository.findById(promoCodeDto.getId()).orElseThrow(() -> new ServiceException("Promo code not found",BAD_REQUEST,HttpStatus.BAD_REQUEST));
+        promoCode.setId(promoCodeDto.getId());
+        promoCode.setPromoCode(promoCodeDto.getPromoCode());
+        promoCode.setDiscount(promoCodeDto.getDiscount());
+        promoCodeRepository.save(promoCode);
+
+        return new ResponseDto("Promo code updated successfully");
+    }
+
+    public ResponseDto updatePromoCodeStatus(String id, Boolean status) {
+        PromoCode promoCode = promoCodeRepository.findById(id).orElseThrow(() -> new ServiceException("Promo code not found",BAD_REQUEST,HttpStatus.BAD_REQUEST));
+        promoCode.setIsActive(status);
+        promoCodeRepository.save(promoCode);
+
+        return new ResponseDto("Promo code status updated successfully");
     }
 }

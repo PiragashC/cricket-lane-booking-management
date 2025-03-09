@@ -25,8 +25,8 @@ public class BookingAgent {
         return bookingService.bookingCricketLane(bookingConverter.convert(cricketLaneBookingDto));
     }
 
-    public BookingPriceDto getBookingPrice(List<String> laneIds, LocalTime fromTime, LocalTime toTime,Integer noOfDates) {
-        return bookingService.getBookingPrice(laneIds,fromTime,toTime,noOfDates);
+    public BookingPriceDto getBookingPrice(List<String> laneIds, LocalTime fromTime, LocalTime toTime,Integer noOfDates,String promoCode) {
+        return bookingService.getBookingPrice(laneIds,fromTime,toTime,noOfDates,promoCode);
     }
 
     public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> date) {
@@ -87,5 +87,17 @@ public class BookingAgent {
 
     public boolean checkPromoCode(String promoCode) {
         return bookingService.checkPromoCode(promoCode);
+    }
+
+    public String getPromoCode() {
+        return bookingService.getPromoCode();
+    }
+
+    public ResponseDto updatePromoCode(PromoCodeDto promoCodeDto) {
+        return bookingService.updatePromoCode(promoCodeDto);
+    }
+
+    public ResponseDto updatePromoCodeStatus(String id, Boolean status){
+        return bookingService.updatePromoCodeStatus(id,status);
     }
 }
