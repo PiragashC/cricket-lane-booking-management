@@ -2,8 +2,11 @@ package com.cricket.lane.booking.management.agent;
 
 import com.cricket.lane.booking.management.agent.converter.BookingConverter;
 import com.cricket.lane.booking.management.api.dto.*;
+import com.cricket.lane.booking.management.enums.BookingStatus;
+import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.service.BookingService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -22,8 +25,8 @@ public class BookingAgent {
         return bookingService.bookingCricketLane(bookingConverter.convert(cricketLaneBookingDto));
     }
 
-    public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime,Integer noOfDates) {
-        return bookingService.getBookingPrice(noOfLanes,fromTime,toTime,noOfDates);
+    public BookingPriceDto getBookingPrice(List<String> laneIds, LocalTime fromTime, LocalTime toTime,Integer noOfDates,String promoCode) {
+        return bookingService.getBookingPrice(laneIds,fromTime,toTime,noOfDates,promoCode);
     }
 
     public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> date) {
@@ -48,5 +51,53 @@ public class BookingAgent {
 
     public ResponseDto reachUs(ReachUsDto reachUsDto) {
         return bookingService.reachUs(reachUsDto);
+    }
+
+    public PaginatedResponseDto<BookingDto> getAllBookingPagination(BookingSearchDto bookingSearchDto){
+        Page<BookingDto> bookingDtos = bookingService.getAllBookingPagination(bookingSearchDto);
+        List<BookingDto> bookingDtoList = bookingDtos.getContent();
+
+        PaginatedResponseDto<BookingDto> bookingDtoPaginatedResponseDto = new PaginatedResponseDto<>();
+        bookingDtoPaginatedResponseDto.setData(bookingDtoList);
+        bookingDtoPaginatedResponseDto.setTotalItems(bookingDtos.getTotalElements());
+        bookingDtoPaginatedResponseDto.setCurrentPage(bookingSearchDto.getPage());
+        bookingDtoPaginatedResponseDto.setTotalPages(bookingDtos.getTotalPages());
+        return bookingDtoPaginatedResponseDto;
+    }
+
+    public ResponseDto updateBooking(CricketLaneBookingDto cricketLaneBookingDto) {
+        return bookingService.updateBooking(cricketLaneBookingDto);
+    }
+
+    public CricketLaneBookingDto getById(String id) {
+        return bookingConverter.convert(bookingService.getById(id));
+    }
+
+    public DropDownDto getBookingType() {
+        DropDownDto dto = new DropDownDto();
+        dto.setBookingType(BookingType.getAll());
+        return dto;
+    }
+
+    public DropDownDto getBookingStatus() {
+        DropDownDto dto = new DropDownDto();
+        dto.setBookingStatus(BookingStatus.getAll());
+        return dto;
+    }
+
+    public boolean checkPromoCode(String promoCode) {
+        return bookingService.checkPromoCode(promoCode);
+    }
+
+    public PromoCodeDto getPromoCode() {
+        return bookingService.getPromoCode();
+    }
+
+    public ResponseDto updatePromoCode(PromoCodeDto promoCodeDto) {
+        return bookingService.updatePromoCode(promoCodeDto);
+    }
+
+    public ResponseDto updatePromoCodeStatus(String id, Boolean status){
+        return bookingService.updatePromoCodeStatus(id,status);
     }
 }

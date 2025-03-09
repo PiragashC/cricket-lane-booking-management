@@ -2,6 +2,7 @@ package com.cricket.lane.booking.management.api.controller;
 
 import com.cricket.lane.booking.management.agent.LaneAgent;
 import com.cricket.lane.booking.management.api.dto.LaneDto;
+import com.cricket.lane.booking.management.api.dto.PaginatedResponseDto;
 import com.cricket.lane.booking.management.api.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -25,4 +26,6 @@ public class LanesController {
     public List<LaneDto> getAllLanes(){
         return laneAgent.getAllActiveLanes();
     }
+
+
 }

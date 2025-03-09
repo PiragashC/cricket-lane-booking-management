@@ -1,5 +1,6 @@
 package com.cricket.lane.booking.management.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,6 +16,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class CricketLaneBookingDto {
     private String id;
     private String email;
@@ -29,4 +31,8 @@ public class CricketLaneBookingDto {
     private String telephoneNumber;
     private String organization;
     private String bookingStatus;
+    private String bookingType;
+    private BigDecimal bookingPrice;
+    private List<LaneDto> laneDtos;
+    private String promoCode;
 }

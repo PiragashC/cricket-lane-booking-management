@@ -26,11 +26,12 @@ public class BookingController {
     }
 
     @GetMapping
-    public BookingPriceDto getBookingPrice(@RequestParam(value = "noOfLanes", required = false) Integer noOfLanes,
+    public BookingPriceDto getBookingPrice(@RequestParam(value = "laneIds", required = false) List<String> laneIds,
                                            @RequestParam(value = "fromTime", required = false) LocalTime fromTime,
                                            @RequestParam(value = "toTime", required = false) LocalTime toTime,
-                                           @RequestParam(value = "noOfDates",required = false) Integer noOfDates) {
-        return bookingAgent.getBookingPrice(noOfLanes, fromTime, toTime,noOfDates);
+                                           @RequestParam(value = "noOfDates",required = false) Integer noOfDates,
+                                           @RequestParam(value = "promoCode",required = false) String promoCode) {
+        return bookingAgent.getBookingPrice(laneIds, fromTime, toTime,noOfDates,promoCode);
     }
 
     @GetMapping("/check-availability")
@@ -64,7 +65,7 @@ public class BookingController {
         return laneAgent.createLane(laneDto);
     }
 
-    @DeleteMapping
+    @DeleteMapping("/delete")
     public ResponseDto deleteBooking(@RequestParam(value = "bookingId") String bookingId){
         return bookingAgent.deleteBooking(bookingId);
     }
@@ -77,5 +78,88 @@ public class BookingController {
     @PostMapping("/reach-us")
     public ResponseDto reachUs(@RequestBody ReachUsDto reachUsDto){
         return bookingAgent.reachUs(reachUsDto);
+    }
+
+    @GetMapping("/get-all-booking-details")
+    public PaginatedResponseDto<BookingDto> getAllBookingPagination(@RequestParam(value = "fromDate") LocalDate fromDate,
+                                                                    @RequestParam(value = "toDate") LocalDate toDate,
+                                                                    @RequestParam(value = "laneId",required = false) String laneId,
+                                                                    @RequestParam(value = "status",required = false) String status,
+                                                                    @RequestParam(value = "type") String type,
+                                                                    @RequestParam(value = "page") int page,
+                                                                    @RequestParam(value = "size") int size){
+        BookingSearchDto bookingSearchDto = BookingSearchDto.builder()
+                .fromDate(fromDate)
+                .toDate(toDate)
+                .laneId(laneId)
+                .status(status)
+                .type(type)
+                .page(page)
+                .size(size)
+                .build();
+
+        return bookingAgent.getAllBookingPagination(bookingSearchDto);
+    }
+
+    @PutMapping("/update")
+    public ResponseDto updateBooking(@RequestBody CricketLaneBookingDto cricketLaneBookingDto){
+        return bookingAgent.updateBooking(cricketLaneBookingDto);
+    }
+
+    @GetMapping("/get-by-id/{id}")
+    public CricketLaneBookingDto getById(@PathVariable(value = "id") String id){
+        return bookingAgent.getById(id);
+    }
+
+    @PutMapping("/update-lane-status")
+    public ResponseDto updateLaneStatus(@RequestParam(value = "id") String id,
+                                        @RequestParam(value = "status") boolean status){
+        return laneAgent.updateLaneStatus(id,status);
+    }
+
+    @GetMapping("/get-lane-by-id/{id}")
+    public LaneDto getLaneById(@PathVariable(value = "id") String id){
+        return laneAgent.getById(id);
+    }
+
+    @PutMapping("/update-lane")
+    public ResponseDto updateLane(@RequestBody LaneDto laneDto){
+        return laneAgent.updateLane(laneDto);
+    }
+
+    @GetMapping("/get-all-lanes")
+    public PaginatedResponseDto<LaneDto> getAllLanes(@RequestParam(value = "page") int page,
+                                                     @RequestParam(value = "size") int size){
+        return laneAgent.getAllLanes(page,size);
+    }
+
+    @GetMapping("/booking-type")
+    public DropDownDto getBookingType() {
+        return bookingAgent.getBookingType();
+    }
+
+    @GetMapping("/booking-status")
+    public DropDownDto getBookingStatus() {
+        return bookingAgent.getBookingStatus();
+    }
+
+    @GetMapping("/promo-code")
+    public boolean checkPromoCode(@RequestParam(value = "promoCode") String promoCode){
+        return bookingAgent.checkPromoCode(promoCode);
+    }
+
+    @GetMapping("/get-promo-code")
+    public PromoCodeDto getPromoCode(){
+        return bookingAgent.getPromoCode();
+    }
+
+    @PutMapping("/update-promo-code")
+    public ResponseDto updatePromoCode(@RequestBody PromoCodeDto promoCodeDto){
+        return bookingAgent.updatePromoCode(promoCodeDto);
+    }
+
+    @PutMapping("/update-promo-code-status")
+    public ResponseDto updatePromoCodeStatus(@RequestParam(value = "id") String id, @RequestParam(value = "status") Boolean status){
+        return bookingAgent.updatePromoCodeStatus(id,status);
     }
 }

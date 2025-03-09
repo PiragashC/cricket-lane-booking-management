@@ -1,6 +1,7 @@
 package com.cricket.lane.booking.management.entity;
 
 import com.cricket.lane.booking.management.enums.BookingStatus;
+import com.cricket.lane.booking.management.enums.BookingType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -42,4 +43,6 @@ public class CricketLaneBooking {
     @Enumerated(EnumType.STRING)
     private BookingStatus bookingStatus;
     private LocalDate createdDate;
+    @Enumerated(EnumType.STRING)
+    private BookingType bookingType;
 }

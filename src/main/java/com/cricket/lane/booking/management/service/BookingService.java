@@ -1,16 +1,25 @@
 package com.cricket.lane.booking.management.service;
 
+import com.cricket.lane.booking.management.agent.converter.BookingConverter;
 import com.cricket.lane.booking.management.api.dto.*;
 import com.cricket.lane.booking.management.entity.BookingDates;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
+import com.cricket.lane.booking.management.entity.Lanes;
+import com.cricket.lane.booking.management.entity.PromoCode;
 import com.cricket.lane.booking.management.enums.BookingStatus;
+import com.cricket.lane.booking.management.enums.BookingType;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.CricketLaneBookingRepository;
 import com.cricket.lane.booking.management.repository.LaneRepository;
+import com.cricket.lane.booking.management.repository.PromoCodeRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -40,17 +49,21 @@ public class BookingService {
 
     private static final Set<Integer> generatedNumbers = new HashSet<>();
 
+    private final BookingConverter bookingConverter;
+
     @Value("${admin.email}")
     private String adminEmail;
+
+    private final PromoCodeRepository promoCodeRepository;
+
 
     public ResponseDto bookingCricketLane(CricketLaneBooking cricketLaneBooking) {
         cricketLaneBooking.getBookingDates().stream()
                 .map(bookingDate -> {
 
-
                     cricketLaneBooking.getSelectedLanes().stream()
                             .map(selectedLane -> {
-                                Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate(),selectedLane.getLaneId());
+                                Boolean checkLaneFree = cricketLaneBookingRepository.checkLaneFree(cricketLaneBooking.getFromTime(), cricketLaneBooking.getToTime(), bookingDate.getBookingDate(), selectedLane.getLaneId());
                                 log.info("checkLane---{}", checkLaneFree);
                                 if (checkLaneFree.equals(Boolean.TRUE)) {
                                     throw new ServiceException("Lane already booked on " + bookingDate.getBookingDate() +
@@ -68,21 +81,33 @@ public class BookingService {
         return responseDto;
     }
 
-    public BookingPriceDto getBookingPrice(Integer noOfLanes, LocalTime fromTime, LocalTime toTime, Integer noOfDates) {
+    public BookingPriceDto getBookingPrice(List<String> laneIds, LocalTime fromTime, LocalTime toTime, Integer noOfDates, String promoCode) {
         BookingPriceDto bookingPriceDto = new BookingPriceDto();
-        double ratePerLane = 45.0;
-
         long durationMinutes = Duration.between(fromTime, toTime).toMinutes();
         long durationHours = (long) Math.ceil(durationMinutes / 60.0);
 
-        BigDecimal totalPrice = BigDecimal.valueOf(noOfLanes * durationHours * ratePerLane * noOfDates);
+        BigDecimal totalPrice = BigDecimal.ZERO;
+
+        for (String laneId : laneIds) {
+            BigDecimal lanePrice = laneRepository.findLanePrice(laneId);
+            BigDecimal laneTotal = lanePrice.multiply(BigDecimal.valueOf(durationHours * noOfDates));
+            totalPrice = totalPrice.add(laneTotal);
+        }
 
         BigDecimal totalPriceWithTax = totalPrice.multiply(BigDecimal.valueOf(1.13));
 
-        bookingPriceDto.setBookingPrice(totalPriceWithTax);
+        PromoCode koverDrivePromoCode = promoCodeRepository.getPromoCodeToCalculatePrice();
 
+        if (koverDrivePromoCode.getPromoCode().equals(promoCode)) {
+            BigDecimal discountPercentage = koverDrivePromoCode.getDiscount();
+            BigDecimal discountAmount = totalPriceWithTax.multiply(discountPercentage.divide(BigDecimal.valueOf(100)));
+            totalPriceWithTax = totalPriceWithTax.subtract(discountAmount);
+        }
+
+        bookingPriceDto.setBookingPrice(totalPriceWithTax);
         return bookingPriceDto;
     }
+
 
 
     public List<LaneDto> checkLaneAvailability(LocalTime fromTime, LocalTime toTime, List<LocalDate> dates) {
@@ -241,5 +266,88 @@ public class BookingService {
         emailNotificationService.send(emailDataDto);
 
         return new ResponseDto("Mail sent to admin");
+    }
+
+    public Page<BookingDto> getAllBookingPagination(BookingSearchDto bookingSearchDto) {
+        Pageable pageable = PageRequest.of(bookingSearchDto.getPage() - 1, bookingSearchDto.getSize());
+        Page<BookingDto> bookingDtos = null;
+        if (bookingSearchDto.getType().equalsIgnoreCase("All")){
+            bookingDtos = cricketLaneBookingRepository.getAllBookingPaginationAllType(pageable,
+                    bookingSearchDto.getFromDate(),
+                    bookingSearchDto.getToDate(),
+                    bookingSearchDto.getLaneId(),
+                    bookingSearchDto.getStatus() != null && !bookingSearchDto.getStatus().isEmpty() ? BookingStatus.fromMappedValue(bookingSearchDto.getStatus()) : null);
+
+
+        }else {
+            bookingDtos = cricketLaneBookingRepository.getAllBookingPagination(
+                    pageable,
+                    bookingSearchDto.getFromDate(),
+                    bookingSearchDto.getToDate(),
+                    bookingSearchDto.getLaneId(),
+                    bookingSearchDto.getStatus() != null && !bookingSearchDto.getStatus().isEmpty() ? BookingStatus.fromMappedValue(bookingSearchDto.getStatus()) : null,
+                    bookingSearchDto.getType() != null && !bookingSearchDto.getType().isEmpty() ? BookingType.fromMappedValue(bookingSearchDto.getType()) : null
+            );
+        }
+        BookingDto.resetCounter();
+
+        List<BookingDto> updatedList = bookingDtos.getContent().stream()
+                .map(dto -> new BookingDto(dto.getId(), dto.getCustomerName(), dto.getDate(), dto.getFromTime(),
+                        dto.getToTime(), dto.getLaneName(), BookingStatus.fromMappedValue(dto.getStatus()), dto.getEmail(), dto.getTelephoneNumber()))
+                .toList();
+
+        return new PageImpl<>(updatedList, pageable, bookingDtos.getTotalElements());
+    }
+
+    public ResponseDto updateBooking(CricketLaneBookingDto cricketLaneBookingDto) {
+        CricketLaneBooking existingBooking = cricketLaneBookingRepository.findById(cricketLaneBookingDto.getId())
+                .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
+
+        cricketLaneBookingRepository.save(bookingConverter.convertForUpdate(existingBooking, cricketLaneBookingDto));
+        return new ResponseDto("Booking updated successfully");
+    }
+
+    public CricketLaneBooking getById(String id) {
+        CricketLaneBooking existingBooking = cricketLaneBookingRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(BOOKING_ID_NOT_FOUND, BAD_REQUEST, HttpStatus.BAD_REQUEST));
+
+        return existingBooking;
+    }
+
+    public boolean checkPromoCode(String promoCode) {
+        String koverDrivePromo = promoCodeRepository.getPromoCode();
+        if (koverDrivePromo.equals(promoCode)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public PromoCodeDto getPromoCode() {
+        PromoCode promoCode = promoCodeRepository.getPromoCodeToCalculatePrice();
+        PromoCodeDto promoCodeDto = new PromoCodeDto();
+        promoCodeDto.setId(promoCode.getId());
+        promoCodeDto.setPromoCode(promoCode.getPromoCode());
+        promoCodeDto.setDiscount(promoCode.getDiscount());
+        promoCodeDto.setIsActive(promoCode.getIsActive());
+        return promoCodeDto;
+    }
+
+    public ResponseDto updatePromoCode(PromoCodeDto promoCodeDto) {
+        PromoCode promoCode = promoCodeRepository.findById(promoCodeDto.getId()).orElseThrow(() -> new ServiceException("Promo code not found",BAD_REQUEST,HttpStatus.BAD_REQUEST));
+        promoCode.setId(promoCodeDto.getId());
+        promoCode.setPromoCode(promoCodeDto.getPromoCode());
+        promoCode.setDiscount(promoCodeDto.getDiscount());
+        promoCodeRepository.save(promoCode);
+
+        return new ResponseDto("Promo code updated successfully");
+    }
+
+    public ResponseDto updatePromoCodeStatus(String id, Boolean status) {
+        PromoCode promoCode = promoCodeRepository.findById(id).orElseThrow(() -> new ServiceException("Promo code not found",BAD_REQUEST,HttpStatus.BAD_REQUEST));
+        promoCode.setIsActive(status);
+        promoCodeRepository.save(promoCode);
+
+        return new ResponseDto("Promo code status updated successfully");
     }
 }

@@ -3,25 +3,19 @@ package com.cricket.lane.booking.management.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.math.BigDecimal;
 
 @Entity
-@Builder
-@AllArgsConstructor
 @Data
-@NoArgsConstructor
-public class Lanes {
+public class PromoCode {
     @Id
     @GenericGenerator(name = "uuid", strategy = "uuid")
     @GeneratedValue(generator = "uuid")
     private String id;
-    private String laneName;
+    private String promoCode;
     private Boolean isActive;
-    private BigDecimal lanePrice;
+    private BigDecimal discount;
 }

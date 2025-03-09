@@ -1,9 +1,14 @@
 package com.cricket.lane.booking.management.repository;
 
+import com.cricket.lane.booking.management.api.dto.BookingDto;
 import com.cricket.lane.booking.management.api.dto.BookingResponseDto;
 import com.cricket.lane.booking.management.api.dto.LaneDto;
 import com.cricket.lane.booking.management.entity.CricketLaneBooking;
 import com.cricket.lane.booking.management.entity.Lanes;
+import com.cricket.lane.booking.management.enums.BookingStatus;
+import com.cricket.lane.booking.management.enums.BookingType;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +21,7 @@ import java.util.Set;
 
 public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneBooking,String> {
 
-    @Query("SELECT DISTINCT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id, l.laneName) " +
+    @Query("SELECT DISTINCT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id, l.laneName,l.lanePrice) " +
             "FROM Lanes l " +
             "WHERE l.id NOT IN ( " +
             "    SELECT DISTINCT sl.laneId " +
@@ -71,5 +76,30 @@ public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneB
             "AND c.createdDate = :date " +
             "AND c.bookingStatus = 'PENDING'")
     List<CricketLaneBooking> stillPending(LocalDate date,LocalTime time);
+
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingDto(c.id,CONCAT(c.firstName,' ',c.lastName) AS customerName,b.bookingDate,c.fromTime, c.toTime,l.laneName,c.bookingStatus,c.email,c.telephoneNumber) " +
+            "FROM CricketLaneBooking c " +
+            "LEFT JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
+            "LEFT JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
+            "LEFT JOIN Lanes l ON s.laneId = l.id " +
+            "WHERE b.bookingDate BETWEEN :fromDate AND :toDate " +
+            "AND (:laneId IS NULL OR s.laneId = :laneId) " +
+            "AND (:status IS NULL OR c.bookingStatus = :status) " +
+            "AND (:type IS NULL OR c.bookingType = :type) " +
+            "ORDER BY c.createdDate DESC")
+    Page<BookingDto> getAllBookingPagination(Pageable pageable, LocalDate fromDate, LocalDate toDate, String laneId,
+                                             BookingStatus status, BookingType type);
+
+    @Query("SELECT NEW com.cricket.lane.booking.management.api.dto.BookingDto(c.id,CONCAT(c.firstName,' ',c.lastName) AS customerName,b.bookingDate,c.fromTime, c.toTime,l.laneName,c.bookingStatus,c.email,c.telephoneNumber) " +
+            "FROM CricketLaneBooking c " +
+            "LEFT JOIN BookingDates b ON c.id = b.cricketLaneBookingId " +
+            "LEFT JOIN SelectedLanes s ON c.id = s.cricketLaneBookingId " +
+            "LEFT JOIN Lanes l ON s.laneId = l.id " +
+            "WHERE b.bookingDate BETWEEN :fromDate AND :toDate " +
+            "AND (:laneId IS NULL OR s.laneId = :laneId) " +
+            "AND (:status IS NULL OR c.bookingStatus = :status) " +
+            "ORDER BY c.createdDate DESC")
+    Page<BookingDto> getAllBookingPaginationAllType(Pageable pageable, LocalDate fromDate, LocalDate toDate, String laneId,
+                                             BookingStatus status);
 
 }
