@@ -21,7 +21,7 @@ import java.util.Set;
 
 public interface CricketLaneBookingRepository extends JpaRepository<CricketLaneBooking,String> {
 
-    @Query("SELECT DISTINCT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id, l.laneName) " +
+    @Query("SELECT DISTINCT NEW com.cricket.lane.booking.management.api.dto.LaneDto(l.id, l.laneName,l.lanePrice) " +
             "FROM Lanes l " +
             "WHERE l.id NOT IN ( " +
             "    SELECT DISTINCT sl.laneId " +
