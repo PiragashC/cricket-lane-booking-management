@@ -41,8 +41,6 @@ public class SecurityConfig {
                                 "/api/v1/booking/promo-code",
                                 "/api/v1/booking/lanes",
                                 "/api/v1/booking/get-promo-code",
-                                "/api/v1/booking/update-promo-code",
-                                "/api/v1/booking/update-promo-code-status",
                                 "/api/v1/lane/**",
                                 "/api/v1/payment/**",
                                 "/api/v1/emails/**"
