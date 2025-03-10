@@ -6,11 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface PromoCodeRepository extends JpaRepository<PromoCode,String> {
 
-    @Query("SELECT p.promoCode FROM PromoCode p " +
-            "WHERE p.isActive = true")
-    String getPromoCode();
-
-    @Query("SELECT p FROM PromoCode p " +
-            "WHERE p.isActive = true")
+    @Query("SELECT p FROM PromoCode p ")
     PromoCode getPromoCodeToCalculatePrice();
 }
