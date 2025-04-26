@@ -5,6 +5,7 @@ import com.cricket.lane.booking.management.entity.Event;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.EventsRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,12 @@ import org.springframework.stereotype.Component;
 public class EventsConverter {
 
     private final EventsRepository eventsRepository;
+
+    @Value("${cloudinary.base-view-url}")
+    private String cloudinaryBaseViewUrl;
+
+    @Value("${cloudinary.base-download-url}")
+    private String cloudinaryBaseDownloadUrl;
 
     public Event convert(EventsDto eventsDto) {
         if (eventsDto.getId() != null && !eventsDto.getId().isEmpty()) {
@@ -51,7 +58,8 @@ public class EventsConverter {
                 .location(event.getLocation())
                 .description(event.getDescription())
                 .status(event.getStatus())
-                .image(event.getImage())
+                .imageViewUrl(cloudinaryBaseViewUrl + event.getImage())
+                .imageDeleteUrl(cloudinaryBaseDownloadUrl + event.getImage())
                 .build();
     }
 }

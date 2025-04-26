@@ -20,5 +20,7 @@ public class EventsDto {
     private String location;
     private String description;
     private boolean status;
+    private String imageViewUrl;
+    private String imageDeleteUrl;
     private String image;
 }

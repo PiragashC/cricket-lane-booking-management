@@ -12,6 +12,8 @@ import lombok.NoArgsConstructor;
 public class FeatureCardDto {
     private String id;
     private String icon;
+    private String iconViewUrl;
+    private String iconDeleteUrl;
     private String name;
     private String description;
 }

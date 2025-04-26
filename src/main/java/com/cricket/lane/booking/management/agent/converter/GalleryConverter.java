@@ -5,6 +5,7 @@ import com.cricket.lane.booking.management.entity.Gallery;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.GalleryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,12 @@ import org.springframework.stereotype.Component;
 public class GalleryConverter {
 
     private final GalleryRepository galleryRepository;
+
+    @Value("${cloudinary.base-view-url}")
+    private String cloudinaryBaseViewUrl;
+
+    @Value("${cloudinary.base-download-url}")
+    private String cloudinaryBaseDownloadUrl;
 
     public Gallery convert(GalleryDto galleryDto) {
         if (galleryDto.getId() != null && !galleryDto.getId().isEmpty()) {
@@ -41,6 +48,8 @@ public class GalleryConverter {
                 .id(gallery.getId())
                 .title(gallery.getTitle())
                 .image(gallery.getImage())
+                .imageViewUrl(cloudinaryBaseViewUrl + gallery.getImage())
+                .imageDeleteUrl(cloudinaryBaseDownloadUrl + gallery.getImage())
                 .uploadedDate(gallery.getUploadedDate())
                 .status(gallery.getStatus())
                 .build();

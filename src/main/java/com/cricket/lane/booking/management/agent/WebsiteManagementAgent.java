@@ -10,6 +10,11 @@ import com.cricket.lane.booking.management.service.WebsiteManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -39,5 +44,13 @@ public class WebsiteManagementAgent {
     public WebsiteDto getWebsiteById(String id) {
         Website website = websiteManagementService.getWebsiteById(id);
         return websiteManagementConverter.convert(website);
+    }
+
+    public List<Map<String, String>> uploadImages(List<MultipartFile> images) throws IOException {
+        return websiteManagementService.uploadImages(images);
+    }
+
+    public void deleteImageByDownloadUrl(String downloadUrl) throws IOException {
+        websiteManagementService.deleteImageByUrl(downloadUrl);
     }
 }

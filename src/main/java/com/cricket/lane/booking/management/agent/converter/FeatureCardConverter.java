@@ -5,6 +5,7 @@ import com.cricket.lane.booking.management.entity.FeatureCard;
 import com.cricket.lane.booking.management.exception.ServiceException;
 import com.cricket.lane.booking.management.repository.FeatureCardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -13,6 +14,12 @@ import org.springframework.stereotype.Component;
 public class FeatureCardConverter {
 
     private final FeatureCardRepository featureCardRepository;
+
+    @Value("${cloudinary.base-view-url}")
+    private String cloudinaryBaseViewUrl;
+
+    @Value("${cloudinary.base-download-url}")
+    private String cloudinaryBaseDownloadUrl;
 
     public FeatureCard convert(FeatureCardDto featureCardDto) {
         if (featureCardDto.getId() != null && !featureCardDto.getId().isEmpty()) {
@@ -37,6 +44,8 @@ public class FeatureCardConverter {
         return FeatureCardDto.builder()
                 .id(featureCard.getId())
                 .icon(featureCard.getIcon())
+                .iconViewUrl(cloudinaryBaseViewUrl + featureCard.getIcon())
+                .iconDeleteUrl(cloudinaryBaseDownloadUrl + featureCard.getIcon())
                 .name(featureCard.getName())
                 .description(featureCard.getDescription())
                 .build();
