@@ -76,27 +76,22 @@ public class WebsiteManagementService {
 
         String relativePath = cloudinaryUrl.substring(startIndex + uploadPrefix.length());
 
-        // Remove "fl_attachment/" if present
         if (relativePath.startsWith("fl_attachment/")) {
             relativePath = relativePath.substring("fl_attachment/".length());
         }
 
-        // Example: v1234567890/custom_1234567890.png
         String[] parts = relativePath.split("/");
         if (parts.length < 2) {
             throw new IllegalArgumentException("Invalid Cloudinary path format.");
         }
 
-        // Get filename without extension → public_id
-        String fileName = parts[1]; // custom_1745658355889.png
+        String fileName = parts[1];
         String publicId = fileName.substring(0, fileName.lastIndexOf('.'));
         log.info("public iddd---{}",publicId);
-        // Now delete using the extracted public_id
         deleteImageByPublicId(publicId);
     }
 
     public void deleteImageByPublicId(String publicId) throws IOException {
-        // Directly use the public_id to delete the image
         Map result = cloudinary.uploader().destroy(publicId, ObjectUtils.emptyMap());
 
         if (!"ok".equals(result.get("result"))) {
