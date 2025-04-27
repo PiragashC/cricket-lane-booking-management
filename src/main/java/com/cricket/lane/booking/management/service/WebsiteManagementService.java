@@ -30,9 +30,9 @@ public class WebsiteManagementService {
 
     public ResponseDto saveOrUpdateWebsite(Website website) {
 
-        websiteRepository.save(website);
+        Website savedWebsite = websiteRepository.save(website);
 
-        return new ResponseDto("Website saved");
+        return new ResponseDto(savedWebsite.getId());
     }
 
     public Website getWebsiteById(String id){
