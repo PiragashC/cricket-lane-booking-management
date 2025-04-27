@@ -3,6 +3,7 @@ package com.cricket.lane.booking.management.agent.converter;
 import com.cricket.lane.booking.management.api.dto.WebsiteDto;
 import com.cricket.lane.booking.management.entity.Website;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
@@ -18,6 +19,12 @@ public class WebsiteManagementConverter {
     private final LaneCardConverter laneCardConverter;
 
     private final EventsConverter eventsConverter;
+
+    @Value("${cloudinary.base-view-url}")
+    private String cloudinaryBaseViewUrl;
+
+    @Value("${cloudinary.base-download-url}")
+    private String cloudinaryBaseDownloadUrl;
 
     public Website convertForUpdate(Website existingWebsite, WebsiteDto websiteDto) {
         existingWebsite.setId(websiteDto.getId() != null ? websiteDto.getId() : existingWebsite.getId());
@@ -93,12 +100,16 @@ public class WebsiteManagementConverter {
                                 .map(laneCardConverter::convert)
                                 .toList() : null)
                 .contentFour(website.getContentFour())
+                .contentFourViewUrl(cloudinaryBaseViewUrl+website.getContentFour())
+                .contentFourDeleteUrl(cloudinaryBaseDownloadUrl+website.getContentFour())
                 .contentFive(website.getContentFive())
                 .contentSix(website.getContentSix())
                 .contentSeven(website.getContentSeven())
                 .contentEight(website.getContentEight())
                 .contentNine(website.getContentNine())
                 .contentTen(website.getContentTen())
+                .contentTenViewUrl(cloudinaryBaseViewUrl+website.getContentTen())
+                .contentTenDeleteUrl(cloudinaryBaseDownloadUrl+website.getContentTen())
                 .contentEleven(website.getContentEleven())
                 .contentTwelve(website.getContentTwelve() != null ?
                         website.getContentTwelve().stream()

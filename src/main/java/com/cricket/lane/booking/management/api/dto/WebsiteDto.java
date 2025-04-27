@@ -17,12 +17,16 @@ public class WebsiteDto {
     private String contentTwo;
     private List<LaneCardDto> contentThree;
     private String contentFour;
+    private String contentFourViewUrl;
+    private String contentFourDeleteUrl;
     private String contentFive;
     private String contentSix;
     private String contentSeven;
     private String contentEight;
     private String contentNine;
     private String contentTen;
+    private String contentTenViewUrl;
+    private String contentTenDeleteUrl;
     private String contentEleven;
     private List<FeatureCardDto> contentTwelve;
     private List<GalleryDto> contentThirteen;
