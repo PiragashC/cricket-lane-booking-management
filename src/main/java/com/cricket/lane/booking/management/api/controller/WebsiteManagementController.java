@@ -28,7 +28,7 @@ public class WebsiteManagementController {
         return websiteManagementAgent.saveOrUpdateWebsite(websiteDto);
     }
 
-    @GetMapping
+    @GetMapping("/get-by-id")
     public WebsiteDto getWebsiteById(@RequestParam(value = "id") String id){
         return websiteManagementAgent.getWebsiteById(id);
     }

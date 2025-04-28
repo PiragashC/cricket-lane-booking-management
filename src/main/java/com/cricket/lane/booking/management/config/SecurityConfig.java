@@ -43,7 +43,8 @@ public class SecurityConfig {
                                 "/api/v1/booking/get-promo-code",
                                 "/api/v1/lane/**",
                                 "/api/v1/payment/**",
-                                "/api/v1/emails/**"
+                                "/api/v1/emails/**",
+                                "/api/v1/website/get-by-id"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )
