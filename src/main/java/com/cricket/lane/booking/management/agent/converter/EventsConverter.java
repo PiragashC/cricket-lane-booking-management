@@ -58,6 +58,7 @@ public class EventsConverter {
                 .location(event.getLocation())
                 .description(event.getDescription())
                 .status(event.getStatus())
+                .image(event.getImage())
                 .imageViewUrl(cloudinaryBaseViewUrl + event.getImage())
                 .imageDeleteUrl(cloudinaryBaseDownloadUrl + event.getImage())
                 .build();

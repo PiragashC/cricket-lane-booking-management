@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.rmi.ServerError;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +48,13 @@ public class WebsiteManagementAgent {
     }
 
     public List<Map<String, String>> uploadImages(List<MultipartFile> images) throws IOException {
+        final long MAX_FILE_SIZE = 10 * 1024 * 1024;
+
+        for (MultipartFile image : images) {
+            if (image.getSize() > MAX_FILE_SIZE) {
+                throw new ServiceException("File " + image.getOriginalFilename() + " exceeds maximum allowed size of 5MB.","Bad request",HttpStatus.BAD_REQUEST);
+            }
+        }
         return websiteManagementService.uploadImages(images);
     }
 
