@@ -189,7 +189,7 @@ public class BookingService {
         emailDataDto.setMailTemplateName("booking_confirmation");
 
         emailDataDto.setRecipients(Collections.singletonList(cricketLaneBooking.getEmail()));
-
+        emailDataDto.setCcList(Collections.singletonList(adminEmail));
         Map<String, Object> data = new HashMap<>();
         data.put("name", cricketLaneBooking.getFirstName());
 
